@@ -1,0 +1,8 @@
+# Specify filepatterns you want git to ignore.
+
+*.exe
+*.jpeg
+*.log
+*.json
+/хлам/*
+/kinonews/*

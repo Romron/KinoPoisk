@@ -5,11 +5,21 @@ import requests.exceptions
 import re 
 
 
-def requestsURLThroughProxy(url,
-							proxyIP = 0,
-							_timeout=2,
-							headers={'User-Agent' : 'Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:47.0) Gecko/20100101 Firefox/47.0'}
-							):
+def parsDateFilms():
+
+	
+
+
+
+
+
+
+	arrResult = '	*** test ***'
+	return arrResult
+
+
+
+def requestsURLThroughProxy(url,proxyIP = 0,_timeout=2,headers={'User-Agent' : 'Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:47.0) Gecko/20100101 Firefox/47.0'}	):
 
 	# Добавить оброботку протоколов SOKS
 
@@ -23,12 +33,12 @@ def requestsURLThroughProxy(url,
 		response = requests.get(url,headers=headers,proxies=proxies,timeout=_timeout)
 		response.encoding = 'utf-8'
 	# Вывод результата в случаи успеха:
-		print('\n\n\n\n' + response.text + '\n\n\n\n')
+		
 		return response.text
 	# Оброботка исключний:
 	except Exception as err:
 		# Вывод результата в случаи	неудачи
-		print('        proxy is not work')
+		# print('          proxy is not work')
 		return False
 
 def parsLinksAllFilmsInYear(Page):
@@ -82,6 +92,7 @@ def pageCapcha(Page):
 	
 	if tegCapch == None:
 		return False
+	print('      -=  captcha  =-')
 	return True
 
 
@@ -98,11 +109,6 @@ def countProxyList(counterProxyList,mounthProxyList=1):
 	
 	print('countProxyList:  ' + proxyList)
 	return proxyList
-
-
-
-def parsDateFilms():
-	pass
 
 
 

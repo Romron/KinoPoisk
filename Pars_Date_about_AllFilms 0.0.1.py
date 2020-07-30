@@ -24,18 +24,31 @@ with open('Proxylist/proxylist 29-07-2020 08.54.06 .json') as file_handle:	# п�
     list_Proxy = json.load(file_handle)
 
 count_LinksToFilm = 1
+count_proxyIP = 0
+
 for Link_ToFilm in list_LinksToFilm:
 
 	print(str(count_LinksToFilm) + '. ' + Link_ToFilm)
-	count_proxyIP = 0
-	for proxyIP in list_Proxy:
+	
+	while count_proxyIP < len(list_Proxy):
+		proxyIP = list_Proxy[count_proxyIP]
+	# for proxyIP in list_Proxy:
+
 		print('    ' + str(count_proxyIP) + '. ' + str(proxyIP))
 
-		html = FPK.requestsURLThroughProxy(Link_ToFilm,proxyIP)
+		html = FPK.requestsURLThroughProxy(Link_ToFilm,proxyIP,_timeout=7)
 
 		count_proxyIP += 1
 		if html:
+			if FPK.pageCapcha(html):
+				
+				continue
+			arrResult = FPK.parsDateFilms()
+			print(arrResult)
 			break
+	else:		# для запуска перебора списка прокси по новому кругу
+		count_proxyIP == 0
+		continue
 	count_LinksToFilm += 1
 	if count_LinksToFilm > 10:
 		break

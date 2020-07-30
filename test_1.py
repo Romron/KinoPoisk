@@ -9,5 +9,5 @@ with open('pages/Start at  30-07-2020 10.06.57 .html', 'r', encoding='UTF-8') as
 dict_Result = FPK.parsDateFilms(html)
 
 
-print(dict_Result)
+# print(dict_Result)
 

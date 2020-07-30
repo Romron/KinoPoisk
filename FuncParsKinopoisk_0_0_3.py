@@ -32,7 +32,7 @@ def parsDateFilms(html):
 		'Actors':[],
 		'Producer':'',
 		'Scenario':[],
-		'Director':'',
+		'Director':[],
 		'WorldPremiere':'',
 		'Duration':'',
 		'RatingIMDb':'',
@@ -48,16 +48,26 @@ def parsDateFilms(html):
 	dict_Result['Genre'] = soup.find('div',text="Жанр").nextSibling.contents[0].text.split(',')
 	Actors = soup.find('h3',text="В главных ролях").nextSibling.contents
 	[dict_Result['Actors'].append(x.text) for x in Actors]  	# НАЗЫВАЕМОЕ списковое включение
-	
 	dict_Result['Producer'] = soup.find('div',text="Режиссер").nextSibling.contents[0].text
 	Scenario = soup.find('div',text="Сценарий").nextSibling.contents
-	# [dict_Result['Scenario'].append(x.text) for x in Scenario]  	# НАЗЫВАЕМОЕ списковое включение
 	for x in Scenario:
-		if type(x) == 'bs4.element.Tag':
+		if x != ', ':
 			dict_Result['Scenario'].append(x.text)
+	Director = soup.find('div',text="Продюсер").nextSibling.contents
+	for x in Director:
+		if x != ', ' :
+			if x.text != '...':
+				dict_Result['Director'].append(x.text)
+	dict_Result['WorldPremiere'] = soup.find('div',text="Премьера в мире").nextSibling.contents[0].text
+	dict_Result['Duration'] = soup.find('div',text="Время").nextSibling.contents[0].text
+
+# <div class="styles_subRating__VEOSH film-sub-rating" data-tid="af4426ab">
+# <span class="styles_valueSection__19woS">IMDb<!-- -->: <!-- -->7.90</span><span class="styles_count__gelnz">3K</span></div>
+	# dict_Result['RatingIMDb'] = soup.find('span',text=re.compile('^IMDb.*')).text
+	RatingIMDb = soup.find('span')
 
 
-	# [print(type(x)) for x in Scenario]  	# НАЗЫВАЕМОЕ списковое включение
+	print(RatingIMDb)
 
 
 	return dict_Result
@@ -136,7 +146,6 @@ def pageCapcha(Page):
 		return False
 	print('      -=  captcha  =-')
 	return True
-
 
 def countProxyList(counterProxyList,mounthProxyList=1):
 	

@@ -5,18 +5,62 @@ import requests.exceptions
 import re 
 
 
-def parsDateFilms():
+def parsDateFilms(html):
 
+	patern_Title = r''
+	patern_ProductionYear = r''
+	patern_Country = r''
+	patern_Genre = r''
+	patern_Actors = r''
+	patern_Producer = r''
+	patern_Scenario = r''
+	patern_Director = r''
+	patern_WorldPremiere = r''
+	patern_Duration = r''
+	patern_RatingIMDb = r''
+	patern_CashFilm = r''		# кассовые сборы в мире
+	patern_link_page = r''
+
+
+
+	dict_Result = {
+		'Id_kinopisk':'test',
+		'Title':'',
+		'ProductionYear':'', 
+		'Country':'',
+		'Genre':'',
+		'Actors':[],
+		'Producer':'',
+		'Scenario':[],
+		'Director':'',
+		'WorldPremiere':'',
+		'Duration':'',
+		'RatingIMDb':'',
+		'CashFilm':'',
+		'link_page':'posters',
+		}
 	
+	soup = BeautifulSoup(html, 'lxml')
+
+	dict_Result['Title'] = soup.find('span',{ "class":"styles_title__2l0HH" }).text
+	dict_Result['ProductionYear'] = soup.find('div',text="Год производства").nextSibling.contents[0].text
+	dict_Result['Country'] = soup.find('div',text="Страна").nextSibling.contents[0].text
+	dict_Result['Genre'] = soup.find('div',text="Жанр").nextSibling.contents[0].text.split(',')
+	Actors = soup.find('h3',text="В главных ролях").nextSibling.contents
+	[dict_Result['Actors'].append(x.text) for x in Actors]  	# НАЗЫВАЕМОЕ списковое включение
+	
+	dict_Result['Producer'] = soup.find('div',text="Режиссер").nextSibling.contents[0].text
+	Scenario = soup.find('div',text="Сценарий").nextSibling.contents
+	# [dict_Result['Scenario'].append(x.text) for x in Scenario]  	# НАЗЫВАЕМОЕ списковое включение
+	for x in Scenario:
+		if type(x) == 'bs4.element.Tag':
+			dict_Result['Scenario'].append(x.text)
 
 
+	# [print(type(x)) for x in Scenario]  	# НАЗЫВАЕМОЕ списковое включение
 
 
-
-
-	arrResult = '	*** test ***'
-	return arrResult
-
+	return dict_Result
 
 
 def requestsURLThroughProxy(url,proxyIP = 0,_timeout=2,headers={'User-Agent' : 'Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:47.0) Gecko/20100101 Firefox/47.0'}	):
@@ -82,8 +126,6 @@ def parsLinksAllFilmsInYear(Page):
 
 	# Рабочие строки:
 	return arrLinksAllFilmsInYear
-
-
 
 def pageCapcha(Page):
 	

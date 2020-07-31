@@ -12,7 +12,7 @@ def parsDateFilms(html):
 		'Title':'',
 		'ProductionYear':'', 
 		'Country':'',
-		'Genre':'',
+		'Genre':[],
 		'Actors':[],
 		'Producer':'',
 		'Scenario':[],
@@ -27,34 +27,85 @@ def parsDateFilms(html):
 	soup = BeautifulSoup(html, 'lxml')
 	try:
 		dict_Result['Title'] = soup.find('span',{ "class":"styles_title__2l0HH" }).text
+	except Exception as err:
+		print('      -= Title is apsent =-')
+		print(err)
+	try:
 		dict_Result['ProductionYear'] = soup.find('div',text="Год производства").nextSibling.contents[0].text
+	except Exception as err:
+		print('      -= ProductionYear is apsent =-')
+		print(err)
+	try:
 		dict_Result['Country'] = soup.find('div',text="Страна").nextSibling.contents[0].text
+	except Exception as err:
+		print('      -= Country is apsent =-')
+		print(err)
+	try:
 		Genre =  soup.find('div',text="Жанр").nextSibling.contents[0].text.split(',')
 		for x in Genre:
-			if x != '...':
+			if x != '...' and x != ' ...' and x != '... ':
 				dict_Result['Genre'].append(x)
+	except Exception as err:
+		print('      -= Genre is apsent =-')
+		print(err)
+	try:
 		Actors = soup.find('h3',text="В главных ролях").nextSibling.contents
 		[dict_Result['Actors'].append(x.text) for x in Actors]  	# НАЗЫВАЕМОЕ списковое включение
+	except Exception as err:
+		print('      -= Actors is apsent =-')
+		print(err)
+	try:
 		dict_Result['Producer'] = soup.find('div',text="Режиссер").nextSibling.contents[0].text
+	except Exception as err:
+		print('      -= Producer is apsent =-')
+		print(err)
+	try:
 		Scenario = soup.find('div',text="Сценарий").nextSibling.contents
 		for x in Scenario:
 			if x != ', ':
 				dict_Result['Scenario'].append(x.text)
+	except Exception as err:
+		print('      -= Scenario is apsent =-')
+		print(err)
+	try:
 		Director = soup.find('div',text="Продюсер").nextSibling.contents
 		for x in Director:
 			if x != ', ' :
 				if x.text != '...':
 					dict_Result['Director'].append(x.text)
+	except Exception as err:
+		print('      -= Director is apsent =-')
+		print(err)
+	try:
 		dict_Result['WorldPremiere'] = soup.find('div',text="Премьера в мире").nextSibling.contents[0].text
+	except Exception as err:
+		print('      -= WorldPremiere is apsent =-')
+		print(err)
+	try:
 		Duration = soup.find('div',text="Время").nextSibling.contents[0].text.split(' /')
 		dict_Result['Duration'] = Duration[0]
+	except Exception as err:
+		print('      -= Duration is apsent =-')
+		print(err)
+	try:
 		dict_Result['RatingIMDb'] = soup.find('span', { "class":"styles_valueSection__19woS" }).text
+	except Exception as err:
+		print('      -= RatingIMDb is apsent =-')
+		print(err)
+	try:
 		dict_Result['link_PagePosters'] = soup.find('a',text=re.compile('Изображения')).get('href')
+	except Exception as err:
+		print('      -= link_PagePosters is apsent =-')
+		print(err)
+	try:
 		CashFilm = soup.find('div',text="Сборы в мире").nextSibling.contents[0].text
 		CashFilm = re.sub(r'[\xa0]','',CashFilm).split(' = ')
 		dict_Result['CashFilm'] = CashFilm[1]
-	except Exception:
-		print('      -= Something is apsent =-')
+	except Exception as err:
+		print('      -= CashFilm is apsent =-')
+		print(err)
+	
+
 	return dict_Result
 
 

@@ -7,22 +7,6 @@ import re
 
 def parsDateFilms(html):
 
-	patern_Title = r''
-	patern_ProductionYear = r''
-	patern_Country = r''
-	patern_Genre = r''
-	patern_Actors = r''
-	patern_Producer = r''
-	patern_Scenario = r''
-	patern_Director = r''
-	patern_WorldPremiere = r''
-	patern_Duration = r''
-	patern_RatingIMDb = r''
-	patern_CashFilm = r''		# кассовые сборы в мире
-	patern_link_page = r''
-
-
-
 	dict_Result = {
 		'Id_kinopisk':'test',
 		'Title':'',
@@ -37,39 +21,40 @@ def parsDateFilms(html):
 		'Duration':'',
 		'RatingIMDb':'',
 		'CashFilm':'',
-		'link_page':'posters',
+		'link_PagePosters':'',
 		}
 	
 	soup = BeautifulSoup(html, 'lxml')
-
-	dict_Result['Title'] = soup.find('span',{ "class":"styles_title__2l0HH" }).text
-	dict_Result['ProductionYear'] = soup.find('div',text="Год производства").nextSibling.contents[0].text
-	dict_Result['Country'] = soup.find('div',text="Страна").nextSibling.contents[0].text
-	dict_Result['Genre'] = soup.find('div',text="Жанр").nextSibling.contents[0].text.split(',')
-	Actors = soup.find('h3',text="В главных ролях").nextSibling.contents
-	[dict_Result['Actors'].append(x.text) for x in Actors]  	# НАЗЫВАЕМОЕ списковое включение
-	dict_Result['Producer'] = soup.find('div',text="Режиссер").nextSibling.contents[0].text
-	Scenario = soup.find('div',text="Сценарий").nextSibling.contents
-	for x in Scenario:
-		if x != ', ':
-			dict_Result['Scenario'].append(x.text)
-	Director = soup.find('div',text="Продюсер").nextSibling.contents
-	for x in Director:
-		if x != ', ' :
-			if x.text != '...':
-				dict_Result['Director'].append(x.text)
-	dict_Result['WorldPremiere'] = soup.find('div',text="Премьера в мире").nextSibling.contents[0].text
-	dict_Result['Duration'] = soup.find('div',text="Время").nextSibling.contents[0].text
-
-# <div class="styles_subRating__VEOSH film-sub-rating" data-tid="af4426ab">
-# <span class="styles_valueSection__19woS">IMDb<!-- -->: <!-- -->7.90</span><span class="styles_count__gelnz">3K</span></div>
-	# dict_Result['RatingIMDb'] = soup.find('span',text=re.compile('^IMDb.*')).text
-	RatingIMDb = soup.find('span')
-
-
-	print(RatingIMDb)
-
-
+	try:
+		dict_Result['Title'] = soup.find('span',{ "class":"styles_title__2l0HH" }).text
+		dict_Result['ProductionYear'] = soup.find('div',text="Год производства").nextSibling.contents[0].text
+		dict_Result['Country'] = soup.find('div',text="Страна").nextSibling.contents[0].text
+		Genre =  soup.find('div',text="Жанр").nextSibling.contents[0].text.split(',')
+		for x in Genre:
+			if x != '...':
+				dict_Result['Genre'].append(x)
+		Actors = soup.find('h3',text="В главных ролях").nextSibling.contents
+		[dict_Result['Actors'].append(x.text) for x in Actors]  	# НАЗЫВАЕМОЕ списковое включение
+		dict_Result['Producer'] = soup.find('div',text="Режиссер").nextSibling.contents[0].text
+		Scenario = soup.find('div',text="Сценарий").nextSibling.contents
+		for x in Scenario:
+			if x != ', ':
+				dict_Result['Scenario'].append(x.text)
+		Director = soup.find('div',text="Продюсер").nextSibling.contents
+		for x in Director:
+			if x != ', ' :
+				if x.text != '...':
+					dict_Result['Director'].append(x.text)
+		dict_Result['WorldPremiere'] = soup.find('div',text="Премьера в мире").nextSibling.contents[0].text
+		Duration = soup.find('div',text="Время").nextSibling.contents[0].text.split(' /')
+		dict_Result['Duration'] = Duration[0]
+		dict_Result['RatingIMDb'] = soup.find('span', { "class":"styles_valueSection__19woS" }).text
+		dict_Result['link_PagePosters'] = soup.find('a',text=re.compile('Изображения')).get('href')
+		CashFilm = soup.find('div',text="Сборы в мире").nextSibling.contents[0].text
+		CashFilm = re.sub(r'[\xa0]','',CashFilm).split(' = ')
+		dict_Result['CashFilm'] = CashFilm[1]
+	except Exception:
+		print('      -= Something is apsent =-')
 	return dict_Result
 
 
@@ -169,7 +154,6 @@ def countProxyList(counterProxyList,mounthProxyList=1):
 # если этот файл используеться как подключаемый модуль то выполняються объявленные ф-ции
 # если этот файл используеться "сам по себе" то выполняються строки после этого услдовия
 if __name__ == '__main__':		
-	# print("Этот файл должен использоваться как подключаемый модуль!")
+	print("Этот файл должен использоваться как подключаемый модуль!")
 
-	parsLinksAllFilmsInYear()
  

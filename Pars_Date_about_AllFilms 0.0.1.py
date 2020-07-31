@@ -41,10 +41,11 @@ for Link_ToFilm in list_LinksToFilm:
 		count_proxyIP += 1
 		if html:
 			if FPK.pageCapcha(html):
-				
 				continue
-			arrResult = FPK.parsDateFilms()
-			print(arrResult)
+			dict_Result = FPK.parsDateFilms(html)
+			# заполняю поле 'Id_kinopisk'
+			dict_Result['Id_kinopisk'] = re.sub(r'[(https://www\.kinopoisk\.ru/film/)/]','',Link_ToFilm)
+			print(dict_Result)
 			break
 	else:		# для запуска перебора списка прокси по новому кругу
 		count_proxyIP == 0

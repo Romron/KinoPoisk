@@ -2,6 +2,7 @@ import os
 import os.path 
 import json
 import time
+import re
 
 import FuncParsKinopoisk_0_0_3  as FPK
 

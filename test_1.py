@@ -32,24 +32,34 @@ def save_Result(dict_,path='',mode=0):
 	# ЗАПИСЬ даннных в файл
 	if os.path.isfile(path_ToFile):		# до запись в существующий файл
 		with open(path_ToFile, 'a', encoding = 'utf-8') as file_handle:
-			file_handle.write('\n-=TEST-=-ДОЗАПИСЬ В существующий ФАЙЛ-=-TEST=-')
-			file_handle.write(str(dict_))
+			# file_handle.write('\n-=TEST-=-ДОЗАПИСЬ В существующий ФАЙЛ-=-TEST=-')
+			# file_handle.write(str(dict_))
+			# file_handle.write(dict_)
+			json.dump(dict_, file_handle, indent = 2, ensure_ascii = False)
 	else:		# запись в новый файл
 		with open(path_ToFile, 'w', encoding = 'utf-8') as file_handle:
-			file_handle.write('\n-=TEST-=-ЗАПИСЬ В новый ФАЙЛ-=-TEST=-')
-			file_handle.write(str(dict_))
+			file_handle.write('[')
+			json.dump(dict_, file_handle, indent = 2, ensure_ascii = False)
+			file_handle.write(']')
 
 
 # ================================================================================================================
 # ================================================================================================================
 
 # path = 'F:\\Python project\\ParsProxy\\Proxylist\\proxylist 31-07-2020 18.59.49 .json'
-path = 'F:/Python project/ParsProxy/Proxylist/test_2 .json'
+path = 'E:\\Projects\\Parsers_2020\\Prosto_film\\kinopoisk\\For_tests\\test_1.json'
 dict_ = {
 	'Id_kinopisk':'1345615',
 	'Title':'История Beastie Boys',
 	'ProductionYear':'2020',
 	'Genre':['документальный',' биография',' музыка'],
 	'Actors':['Адам Хоровиц','Майк Даймонд','Beastie Boys']
-}
-save_Result(dict_,path)
+	}
+# save_Result(dict_,path)
+
+with open(path, 'b') as file_handle:
+	file_handle.seek(-1,2) 
+	# list_from_file = json.load(file_handle)
+	list_from_file = file_handle.read()
+
+	print(list_from_file)

@@ -15,7 +15,11 @@ import re
 
 # print(dict_Result)
 
-def save_Result(dict_,path='',mode=0):
+def save_Result(date,path='',mode=0):
+	'''
+		запись  и ДОзапись полученых данных в файл в формате json
+		path обязательно должен содержать имя файла
+	'''
 
 	if path:
 		arr_path = re.split(r'[/\\\\]',path)
@@ -32,19 +36,19 @@ def save_Result(dict_,path='',mode=0):
 	# ЗАПИСЬ даннных в файл
 	if os.path.isfile(path_ToFile):		# до запись в существующий файл
 		with open(path_ToFile, 'a', encoding = 'utf-8') as file_handle:
-			file_handle.write('\n-=TEST-=-ДОЗАПИСЬ В существующий ФАЙЛ-=-TEST=-')
-			file_handle.write(str(dict_))
+			# file_handle.write(date)
+			json.dump(date, file_handle, indent = 2, ensure_ascii = False)
 	else:		# запись в новый файл
 		with open(path_ToFile, 'w', encoding = 'utf-8') as file_handle:
-			file_handle.write('\n-=TEST-=-ЗАПИСЬ В новый ФАЙЛ-=-TEST=-')
-			file_handle.write(str(dict_))
+			# file_handle.write(date)
+			json.dump(date, file_handle, indent = 2, ensure_ascii = False)
 
 
 # ================================================================================================================
 # ================================================================================================================
 
 # path = 'F:\\Python project\\ParsProxy\\Proxylist\\proxylist 31-07-2020 18.59.49 .json'
-path = 'F:/Python project/ParsProxy/Proxylist/test_2 .json'
+path = 'F:/Python project/ParsProxy/Proxylist/test_3 .json'
 dict_ = {
 	'Id_kinopisk':'1345615',
 	'Title':'История Beastie Boys',
@@ -52,4 +56,12 @@ dict_ = {
 	'Genre':['документальный',' биография',' музыка'],
 	'Actors':['Адам Хоровиц','Майк Даймонд','Beastie Boys']
 }
-save_Result(dict_,path)
+# save_Result(dict_,path)
+
+with open(path, 'r', encoding = 'utf-8') as file_handle:
+	d = read(file_handle)
+	data = json.load(file_handle)
+
+
+	print(data)
+	# data["values"] += list(a_dict)

@@ -54,7 +54,7 @@ while count_LinksToFilm < len(list_LinksToFilm):
 			print(dict_Result)
 			break
 	else:		# для запуска перебора списка прокси по новому кругу
-		count_proxyIP == 0 
+		count_proxyIP = 0 
 		continue
 	count_LinksToFilm += 1
 	# if count_LinksToFilm > 10:

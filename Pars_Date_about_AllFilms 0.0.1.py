@@ -19,15 +19,15 @@ count_proxyIP = 0
 
 # Инициализация работы программы 
 if os.path.isfile(path_FileSaveResult):
-	with open(path_ToFile, 'r', encoding = 'utf-8') as file_handle:
+	with open(path_FileSaveResult, 'r', encoding = 'utf-8') as file_handle:
 		dict_ = json.load(file_handle)
-		count_LinksToFilm = dict_[0]['count_LinksToFilm']
+		count_LinksToFilm = int(dict_[0]['count_LinksToFilm'])+1	# что бы избежать повторов т.е. count_LinksToFilm = номеру последней оброботтаной ссылки
 	
 
 with open('json/arrLinksAllFilms 22-06-2020 09.11.09 .json') as file_handle:	# получаю ссылки из файла в список
     list_LinksToFilm = json.load(file_handle)
 
-with open('Proxylist/proxylist 29-07-2020 08.54.06 .json') as file_handle:	# получаю прокси из файла в список
+with open('Proxylist/proxylist 05-08-2020 20.00.19 .json') as file_handle:	# получаю прокси из файла в список
     list_Proxy = json.load(file_handle)
 
 

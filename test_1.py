@@ -78,9 +78,8 @@ def save_Result(dict_,path,count_LinksToFilm):
 # ================================================================================================================
 # ================================================================================================================
 
-<<<<<<< HEAD
 # path = 'F:\\Python project\\ParsProxy\\Proxylist\\proxylist 31-07-2020 18.59.49 .json'
-path = 'F:/Python project/ParsProxy/Proxylist/test_3 .json'
+path = 'F:\\Python project\\KinoPoisk\\json\\test_1 .json'
 
 dict_ = {
 	'Id_kinopisk':'1345615',
@@ -100,7 +99,7 @@ dict_2 = {
 
 count_LinksToFilm = 500
 
-save_Result(dict_2,path,11238)
+save_Result(dict_2,path,count_LinksToFilm)
 size_File = os.path.getsize(path)
 with open(path, 'r+', encoding = 'utf-8') as file_handle:
 # 	str_ = '{ "count_LinksToFilm" : "' + str(count_LinksToFilm) +'"},'

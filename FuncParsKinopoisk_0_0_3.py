@@ -10,9 +10,6 @@ import json
 
 def save_Result(dict_,path,count_LinksToFilm):
 
-	size_File = 0 #  для тестов
-
-
 	if path:
 		arr_path = re.split(r'[/\\\\]',path)
 		fileName = arr_path[len(arr_path)-1]	# TODO: добавить проверку на наличие имени файла в пути
@@ -24,22 +21,49 @@ def save_Result(dict_,path,count_LinksToFilm):
 	else:
 		print('Нет пути к файлу для сохранения')
 		return False
-
-	if os.path.isfile(path_ToFile) :	# до запись в существующий НЕпустой файл
+	#======================  до запись в существующий НЕпустой файл  =============
+	if os.path.isfile(path_ToFile) :	
 		size_File = os.path.getsize(path)
-		print('Файл существует, его размер равен: ', size_File)		#  для тестов
 		if size_File != 0:
-			print('if size_File != 0:')		#  для тестов
 			with open(path_ToFile, 'r+', encoding = 'utf-8') as file_handle:
+				
+				# для продолжаения работы программы с места остановки
+				str_ = '{ "count_LinksToFilm" : "' + str(count_LinksToFilm) +'"},'
+				if len(str_) < 50:
+					n = 50 - len(str_)
+				else:
+					print('count_LinksToFilm слишком большой')
+					return False
+				str_ = '{ "count_LinksToFilm" : "' + str(count_LinksToFilm) +'"' + ' '*n + '},\n'
+
+				# для продолжаения работы программы с места остановки
+				file_handle.seek(2,0) 
+				file_handle.write(str_)	
+
 				file_handle.seek(size_File-3,0) 
-				file_handle.write(',\n')
+				file_handle.write(',\n')		
 				json.dump(dict_, file_handle, indent = 2, ensure_ascii = False)
 				file_handle.write('\n]')		
 				return 
-	# запись в новый или пустой файл
-	print('Файл НЕ существует, его размер равен: ', size_File)		#  для тестов
+	# ===================  запись в новый или пустой файл  ========================
+
+	# для продолжаения работы программы с места остановки
+	str_ = '{ "count_LinksToFilm" : "' + str(count_LinksToFilm) +'"},'
+	if len(str_) < 50:
+		n = 50 - len(str_)
+	else:
+		print('count_LinksToFilm слишком большой')
+		return False
+	str_ = '{ "count_LinksToFilm" : "' + str(count_LinksToFilm) +'"' + ' '*n + '},\n'
+
+
 	with open(path_ToFile, 'w', encoding = 'utf-8') as file_handle:
 		file_handle.write('[\n')
+
+		# для продолжаения работы программы с места остановки
+		file_handle.seek(2,0) 
+		file_handle.write(str_)	
+
 		json.dump(dict_, file_handle, indent = 2, ensure_ascii = False)
 		file_handle.write('\n]')
 

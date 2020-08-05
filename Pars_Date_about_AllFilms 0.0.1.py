@@ -15,14 +15,15 @@ import re
 
 
 timeStart = time.strftime("%d-%m-%Y %H.%M.%S", time.localtime())
-
 print('Start at  ' + timeStart)
+
+path_FileSaveResult = 'json/result_DateAboutAllFilms .json'
 
 
 with open('json/arrLinksAllFilms 22-06-2020 09.11.09 .json') as file_handle:	# получаю ссылки из файла в список
     list_LinksToFilm = json.load(file_handle)
 
-with open('Proxylist/proxylist 31-07-2020 18.59.49 .json') as file_handle:	# получаю прокси из файла в список
+with open('Proxylist/proxylist 29-07-2020 08.54.06 .json') as file_handle:	# получаю прокси из файла в список
     list_Proxy = json.load(file_handle)
 
 count_LinksToFilm = 1
@@ -47,6 +48,7 @@ for Link_ToFilm in list_LinksToFilm:
 			dict_Result = FPK.parsDateFilms(html)
 			# заполняю поле 'Id_kinopisk'
 			dict_Result['Id_kinopisk'] = re.sub(r'[(https://www\.kinopoisk\.ru/film/)/]','',Link_ToFilm)
+			FPK.save_Result(dict_Result,path_FileSaveResult)
 			print(dict_Result)
 			break
 	else:		# для запуска перебора списка прокси по новому кругу

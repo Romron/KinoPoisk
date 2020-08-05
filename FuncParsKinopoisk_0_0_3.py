@@ -8,7 +8,7 @@ import os.path
 import json
 
 
-def save_Result(dict_,path):
+def save_Result(dict_,path,count_LinksToFilm):
 
 	size_File = 0 #  для тестов
 
@@ -27,9 +27,9 @@ def save_Result(dict_,path):
 
 	if os.path.isfile(path_ToFile) :	# до запись в существующий НЕпустой файл
 		size_File = os.path.getsize(path)
-		print('Файл существует, его размер равен: ', size_File)
+		print('Файл существует, его размер равен: ', size_File)		#  для тестов
 		if size_File != 0:
-			print('if size_File != 0:')
+			print('if size_File != 0:')		#  для тестов
 			with open(path_ToFile, 'r+', encoding = 'utf-8') as file_handle:
 				file_handle.seek(size_File-3,0) 
 				file_handle.write(',\n')
@@ -37,7 +37,7 @@ def save_Result(dict_,path):
 				file_handle.write('\n]')		
 				return 
 	# запись в новый или пустой файл
-	print('Файл НЕ существует, его размер равен: ', size_File)
+	print('Файл НЕ существует, его размер равен: ', size_File)		#  для тестов
 	with open(path_ToFile, 'w', encoding = 'utf-8') as file_handle:
 		file_handle.write('[\n')
 		json.dump(dict_, file_handle, indent = 2, ensure_ascii = False)

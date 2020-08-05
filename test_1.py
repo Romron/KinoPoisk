@@ -42,7 +42,7 @@ def save_Result(dict_,path,count_LinksToFilm):
 				else:
 					print('count_LinksToFilm слишком большой')
 					return False
-				str_ = '{ "count_LinksToFilm" : "' + str(count_LinksToFilm) +'"' + ' '*n + '},\n'
+				str_ = '{ "count_LinksToFilm" : "' + str(count_LinksToFilm) +'"' + ' '*n + '},'
 
 				# для продолжаения работы программы с места остановки
 				file_handle.seek(2,0) 

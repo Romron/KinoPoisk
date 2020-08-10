@@ -5,7 +5,6 @@ import time
 import re
 
 import FuncParsKinopoisk_0_0_3  as FPK
-import re
 
 
 
@@ -27,7 +26,8 @@ if os.path.isfile(path_FileSaveResult):
 with open('json/arrLinksAllFilms 22-06-2020 09.11.09 .json') as file_handle:	# получаю ссылки из файла в список
     list_LinksToFilm = json.load(file_handle)
 
-with open('Proxylist/proxylist 05-08-2020 20.00.19 .json') as file_handle:	# получаю прокси из файла в список
+# with open('Proxylist/proxylist 05-08-2020 20.00.19 .json') as file_handle:	# получаю прокси из файла в список
+with open('Proxylist/proxylist 07-08-2020 09.37.27 .json') as file_handle:	# получаю прокси из файла в список
     list_Proxy = json.load(file_handle)
 
 
@@ -41,7 +41,7 @@ while count_LinksToFilm < len(list_LinksToFilm):
 
 		print('    ' + str(count_proxyIP) + '. ' + str(proxyIP))
 
-		html = FPK.requestsURLThroughProxy(Link_ToFilm,proxyIP,_timeout=7)
+		html = FPK.requestsURLThroughProxy(Link_ToFilm,proxyIP,_timeout=5)
 
 		count_proxyIP += 1
 		if html:

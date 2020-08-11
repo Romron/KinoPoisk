@@ -8,6 +8,12 @@ import os.path
 import json
 
 
+def pars_LinksPosters(html):
+	print('pars_LinksPosters(html)')
+
+	return 'HTML'
+
+
 def save_Result(dict_,path,count_LinksToFilm):
 
 	if path:
@@ -170,9 +176,13 @@ def parsDateFilms(html):
 
 	return dict_Result
 
-def requestsURLThroughProxy(url,proxyIP = 0,_timeout=2,headers={'User-Agent' : 'Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:47.0) Gecko/20100101 Firefox/47.0'}	):
-
-	# Добавить оброботку протоколов SOKS
+def requestsURLThroughProxy(url,proxyIP = 0,_timeout=2,mod='0',headers={'User-Agent' : 'Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:47.0) Gecko/20100101 Firefox/47.0'}	):
+	'''
+		параметр mod устанавливает что ф-ция будет возвращать:
+				0 - возвращает HTML страницы
+				1 - возвращает обьект response без изменений. Предназначен для скачивания файлов
+		Добавить оброботку протоколов SOKS
+	'''
 
 	if proxyIP:
 		http_proxy = "http://" + proxyIP
@@ -184,8 +194,10 @@ def requestsURLThroughProxy(url,proxyIP = 0,_timeout=2,headers={'User-Agent' : '
 		response = requests.get(url,headers=headers,proxies=proxies,timeout=_timeout)
 		response.encoding = 'utf-8'
 	# Вывод результата в случаи успеха:
-		
-		return response.text
+		if mod == 0:		
+			return response.text
+		elif mod == 1:
+			return response
 	# Оброботка исключний:
 	except Exception as err:
 		# Вывод результата в случаи	неудачи

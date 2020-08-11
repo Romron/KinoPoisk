@@ -34,7 +34,7 @@ n_Film = 0		# для того что бы перепрыгнуть нулево�
 count_proxyIP = 1
 
 path_FileDateAllFilms = 'json/result_DateAboutAllFilms .json'
-dir_DownloadPosters = 'posters ' + time_Start
+dir_DownloadPosters = 'posters ' + time_Start		# сохранять в отдельную папку
 if not os.path.exists(dir_DownloadPosters) :
 	os.mkdir(dir_DownloadPosters)
 

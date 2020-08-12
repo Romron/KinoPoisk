@@ -9,9 +9,34 @@ import json
 
 
 def pars_LinksPosters(html):
-	print('pars_LinksPosters(html)')
+	
+	list_LinksPosters = []
+	soup = BeautifulSoup(html, 'lxml')
 
-	return 'HTML'
+	try:
+		# <a href="/picture/3474204/"><img src="https://st.kp.yandex.net/images/kadr/sm_3474204.jpg" alt="Просмотр фото" title="Просмотр фото" width="170" height="113"></a>
+		
+		# <a href="/picture/3375438/"><img "Просмотр фото" height="227" src="https://st.kp.yandex.net/images/poster/sm_3375438.jpg" title="Просмотр постера" width="170"/></a>, 
+		# <a href="/picture/3375438/" target="_blank" title="Открыть в новом окне"></a>
+		
+		# # рабочий вариант №1
+		# list_LinksPosters = soup.findAll('a',href=re.compile(r'picture'))
+		# for links in list_LinksPosters:
+		# 	q = link.find('img')
+		# 	if q:
+		# 		href_ = link.get('href')
+		# 		print(href_)
+
+		list_img = soup.findAll('img', title=re.compile(r'Просмотр постера'))
+		for teg_a in list_img:
+			link = teg_a.parent.get('href')
+			list_LinksPosters.append(link)
+
+	except Exception as err:
+		print(err)
+
+	# print(list_LinksPosters)
+	return list_LinksPosters
 
 
 def save_Result(dict_,path,count_LinksToFilm):
@@ -176,7 +201,7 @@ def parsDateFilms(html):
 
 	return dict_Result
 
-def requestsURLThroughProxy(url,proxyIP = 0,_timeout=2,mod='0',headers={'User-Agent' : 'Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:47.0) Gecko/20100101 Firefox/47.0'}	):
+def requestsURLThroughProxy(url,proxyIP = 0,_timeout=2,mod=0,headers={'User-Agent' : 'Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:47.0) Gecko/20100101 Firefox/47.0'}	):
 	'''
 		параметр mod устанавливает что ф-ция будет возвращать:
 				0 - возвращает HTML страницы
@@ -192,9 +217,9 @@ def requestsURLThroughProxy(url,proxyIP = 0,_timeout=2,mod='0',headers={'User-Ag
 	# Попытка подключения к URLу
 	try:
 		response = requests.get(url,headers=headers,proxies=proxies,timeout=_timeout)
-		response.encoding = 'utf-8'
 	# Вывод результата в случаи успеха:
 		if mod == 0:		
+			response.encoding = 'utf-8'
 			return response.text
 		elif mod == 1:
 			return response
@@ -202,6 +227,7 @@ def requestsURLThroughProxy(url,proxyIP = 0,_timeout=2,mod='0',headers={'User-Ag
 	except Exception as err:
 		# Вывод результата в случаи	неудачи
 		# print('          proxy is not work')
+		# print(err)		# для отладки
 		return False
 
 def parsLinksAllFilmsInYear(Page):

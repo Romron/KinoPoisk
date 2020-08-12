@@ -38,7 +38,7 @@ dir_DownloadPosters = 'posters ' + time_Start		# сохранять в отде�
 if not os.path.exists(dir_DownloadPosters) :
 	os.mkdir(dir_DownloadPosters)
 
-with open('Proxylist/proxylist 07-08-2020 09.37.27 .json') as file_handle:	# получаю прокси из файла в список
+with open('Proxy/Proxylist/httptunnel.ge_handly_1.json') as file_handle:	# получаю прокси из файла в список
     list_Proxy = json.load(file_handle)
 
 
@@ -58,8 +58,9 @@ for dict_DateAllFilm in list_DateAllFilms:
 	print(n_Film,'. ',url_PagePoster,sep='')
 	# формирую url_PagePoster = 'https://www.kinopoisk.ru' + [link_PagePosters]
 
-	for proxyIP in list_Proxy:
-		if flagCaptcha_DownloadPostersPoster != 1:
+	while count_proxyIP < len(list_Proxy):
+		proxyIP = list_Proxy[count_proxyIP]
+		if flagCaptcha_DownloadPostersPoster == 0:
 			print('    ' + str(count_proxyIP) + '. ' + str(proxyIP))
 			count_proxyIP += 1
 			html = FPK.requestsURLThroughProxy(url_PagePoster,proxyIP,_timeout=5)
@@ -83,7 +84,7 @@ for dict_DateAllFilm in list_DateAllFilms:
 			# закрыто до выяснения "что вернёться если КАПТЧА????"
 			# if respons_Poster:
 			# 	if FPK.pageCapcha(respons_Poster):
-			# 		flag_Captcha = 1
+			# 		flagCaptcha_DownloadPostersPoster = 1
 			#		continue   # перейти к новому proxy не теряя текущего состояния !!!
 				# with open(path_DownloadPostersPoster, "wb") as code_Poster:
 				#     code_Poster.write(respons_Poster.content)
@@ -96,6 +97,10 @@ for dict_DateAllFilm in list_DateAllFilms:
 			n_Poster = 0
 			count_proxyIP = 1
 			break	# выхожу из перебора списка прокси т.к. список ссылок на постера закончен
+	else:
+		count_proxyIP = 1
+		continue
+
 
 # print(list_DateAllFilms[1]['Id_kinopisk'],list_DateAllFilms[1]['link_PagePosters'])
 

@@ -322,6 +322,9 @@ if __name__ == '__main__':
 				except IndexError:
 					pass
 
+			# ==========================================  Обработка каптчи  ==================================
+			#  этот блок не рабочий! Но т.к. без него на тестах собрал около 1200 proxy разбираться не хочу ОСТАВИЛ НА ПОТОМ!!
+
 			if check_CaptchaPage(html) == 'CAPTCHA' or html == False:
 				try:			# если result_listProxy нет 
 					if re.search('http://free-proxy.cz/en',URL_NextPage):
@@ -399,6 +402,8 @@ if __name__ == '__main__':
 
 	print('\n\n')
 	print(result_listProxy)
+
+# Этот участок кода почемуто не запушилсе в original 
 
 #============= Записываем полученные прокси в файл: ============
 

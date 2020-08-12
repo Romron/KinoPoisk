@@ -6,8 +6,9 @@ from requests.exceptions import *
 from urllib3.exceptions import *
 from bs4 import BeautifulSoup
 import re 
+import json
 
-from proxylist import *
+# from proxylist import *		# для тестов
 
 
 print("test 3.py     Чекер proxy с помощью библиотеки Requests \n")
@@ -35,11 +36,17 @@ listHeaders = [
 	{'User-Agent' : 'Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:47.0) Gecko/20100101 Firefox/47.0'}
 ]
 
+# Список прокси из файла:
+with open('Proxylist/proxylist 29-07-2020 08.54.06 .json') as file_handle:
+    proxyList_from_file = json.load(file_handle)
+
+
+
 
 # for headers in listHeaders:
 # 	PROXY = "145.255.28.2:58193"
 
-for PROXY in proxyList_1:
+for PROXY in proxyList_from_file:
 	headers = {'User-Agent' : 'Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:47.0) Gecko/20100101 Firefox/47.0'}
 
 	countProxy += 1
@@ -106,7 +113,7 @@ for PROXY in proxyList_1:
 	# 	continue	
 
 	except Exception as err:
-		print(str(countProxy) + ". Неизвестная ошибка соединения" )
+		print(str(countProxy) + ". proxy is dont work" )
 		continue
 
 	countAnonymousProxy += 1

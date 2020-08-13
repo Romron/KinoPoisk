@@ -27,16 +27,18 @@ def pars_LinksPosters(html):
 		# 		href_ = link.get('href')
 		# 		print(href_)
 
-		list_img = soup.findAll('img', title=re.compile(r'Просмотр постера'))
-		for teg_a in list_img:
-			link = teg_a.parent.get('href')
+		list_img = soup.findAll('img', title=re.compile(r'Просмотр [(?:постера)(?:фото)]'))
+		for teg_img in list_img:
+			link = teg_img.get('src')
 			list_LinksPosters.append(link)
 
 	except Exception as err:
 		print(err)
 
-	# print(list_LinksPosters)
-	return list_LinksPosters
+	if list_LinksPosters: 
+		return list_LinksPosters
+	return False
+
 
 
 def save_Result(dict_,path,count_LinksToFilm):
@@ -217,9 +219,9 @@ def requestsURLThroughProxy(url,proxyIP = 0,_timeout=2,mod=0,headers={'User-Agen
 	# Попытка подключения к URLу
 	try:
 		response = requests.get(url,headers=headers,proxies=proxies,timeout=_timeout)
+		response.encoding = 'utf-8'
 	# Вывод результата в случаи успеха:
 		if mod == 0:		
-			response.encoding = 'utf-8'
 			return response.text
 		elif mod == 1:
 			return response
@@ -275,9 +277,10 @@ def parsLinksAllFilmsInYear(Page):
 def pageCapcha(Page):
 	
 	soup = BeautifulSoup(Page, 'lxml')
-	tegCapch = re.search('запросы, поступившие с вашего IP-адреса, похожи на автоматические', soup.text)
+	tegCapch_1 = re.search('запросы, поступившие с вашего IP-адреса, похожи на автоматические', soup.text)
+	tegCapch_2 = re.search('https://www.kinopoisk.ru/captcha/', soup.text)
 	
-	if tegCapch == None:
+	if tegCapch_1 == None and tegCapch_2 == None:
 		return False
 	print('      -=  captcha  =-')
 	return True

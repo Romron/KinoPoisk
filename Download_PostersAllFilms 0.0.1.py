@@ -32,6 +32,7 @@ flagCaptcha_DownloadPostersPoster = 0
 n_Poster = 0
 n_Film = 0		# для того что бы перепрыгнуть нулевой элемент list_DateAllFilms и для вывода на печать 
 count_proxyIP = 1
+n_space = 4		# для более красивой выдачи результатов
 
 path_FileDateAllFilms = 'json/result_DateAboutAllFilms .json'
 
@@ -43,7 +44,7 @@ if not os.path.exists(dir_DownloadPosters) :
 	os.mkdir(dir_DownloadPosters)
 
 # получаю прокси из файла в список
-with open('Proxy/Proxylist/proxylist 12-08-2020 10.21.21 .json') as file_handle:	
+with open('Proxy/Proxylist/proxylist 13-08-2020 10.22.03 .json') as file_handle:	
     list_Proxy = json.load(file_handle)
 # получаю ссылку на страницу постперов фильма
 with open(path_FileDateAllFilms, "r", encoding='utf-8') as file_handle:
@@ -61,10 +62,12 @@ for dict_DateAllFilm in list_DateAllFilms:
 
 	while count_proxyIP < len(list_Proxy):
 		proxyIP = list_Proxy[count_proxyIP]
+		print(' '*n_space + str(count_proxyIP) + '. ' + str(proxyIP))
+
 		if flagCaptcha_DownloadPostersPoster == 0:
-			print('    ' + str(count_proxyIP) + '. ' + str(proxyIP))
 			count_proxyIP += 1
 			html = FPK.requestsURLThroughProxy(url_PagePoster,proxyIP,_timeout=5)
+			
 			if html:
 				if FPK.pageCapcha(html):
 					continue 
@@ -74,42 +77,39 @@ for dict_DateAllFilm in list_DateAllFilms:
 					break
 			else:
 				continue	# перехожу на следующий прокси в списке
+		
 		# сюда попадаю только в том случае если есть список постеров при этом в proxyIP рабочий(!) proxy 
-		for link_Poster in list_LinksPosters:
-			path_DownloadPostersPoster = dir_DownloadPosters + '/' + dict_DateAllFilm['Id_kinopisk'] + '_' + str(n_Poster) + '.img'
-			print('      ',path_DownloadPostersPoster)
-			respons_Poster = FPK.requestsURLThroughProxy(url_PagePoster,proxyIP,_timeout=5,mod=1)	
-			
-			# что вернёться если КАПТЧА????
+		while n_Poster < len(list_LinksPosters):
+			link_Poster = list_LinksPosters[n_Poster]
+			# формирую путь для сохранения файла постера
+			path_DownloadPostersPoster = dir_DownloadPosters + '/' + dict_DateAllFilm['Id_kinopisk'] + '_' + str(n_Poster) + '.jpeg'		
+			# URL для скачивания постера == link_Poster
+			print('       ',link_Poster)
+			respons_Poster = FPK.requestsURLThroughProxy(link_Poster,proxyIP,_timeout=5,mod=1)	
 
-			print(respons_Poster)
-
-			if respons_Poster.status_code != False and respons_Poster.status_code == 200:
-
-				print('\n',respons_Poster.status_code,'\n',sep='**************')
-
+			# if respons_Poster == False or FPK.pageCapcha(respons_Poster.content):
+			if respons_Poster == False: 	# на пока считаю что если запрос к картинке успешен то каптчи быть не может, но это необходимо проверять!!
+				flagCaptcha_DownloadPostersPoster = 1
+				print('          -= captcha downloader postrer =-')
+				break   # перейти к новому proxy не теряя текущего состояния !!! т.е. сохранить  n_Poster
+			else:
 				with open(path_DownloadPostersPoster, "wb") as code_Poster:
 				    code_Poster.write(respons_Poster.content)
 				flagCaptcha_DownloadPostersPoster = 0
-			else:
-				print('CAPTCHA')
-				try:
-					prin('respons_Poster.status_code   ',respons_Poster.status_code)
-					prin('\n respons_Poster.text   ',respons_Poster.text,'\n')
-				except Exception as err:
-					pass
+				n_Poster += 1
 
-				# FPK.pageCapcha(respons_Poster):
-				flagCaptcha_DownloadPostersPoster = 1
-				continue   # перейти к новому proxy не теряя текущего состояния !!!
-
-			n_Poster += 1
+		
 
 		if flagCaptcha_DownloadPostersPoster == 1:
+				count_proxyIP += 1
+				n_space = 8
 				continue	# переход на следующий прокси в списке
 		else:
 			n_Poster = 0
-			break	# выхожу из перебора списка прокси т.к. список ссылок на постера закончен
+			n_space = 4
+			print('          -= all posters are downloadered =-')
+			break	# выхожу из перебора списка прокси т.к. список ссылок на постера закончен 
+					# необходимо перейти на следующую итерацию цыкла перебора ссылок на страницы постеров
 	else:
 		count_proxyIP = 1
 		continue

@@ -71,26 +71,39 @@ for dict_DateAllFilm in list_DateAllFilms:
 			if html:
 				if FPK.pageCapcha(html):
 					continue 
-				list_LinksPosters = FPK.pars_LinksPosters(html)
-				if list_LinksPosters == False:
+				list_LinksPagesBigPosters = FPK.pars_LinksPagesBigPosters(html)		# получаю список ссылок на страницы спостерами большого размера
+				if list_LinksPagesBigPosters == False:
 					print('      ',url_PagePoster,'    постеров нет')
 					break
 			else:
 				continue	# перехожу на следующий прокси в списке
 		
-		# сюда попадаю только в том случае если есть список постеров при этом в proxyIP рабочий(!) proxy 
-		while n_Poster < len(list_LinksPosters):
-			link_Poster = list_LinksPosters[n_Poster]
+		# сюда попадаю только в том случае если есть список ссылок на страницы c спостерами большого размера при этом в proxyIP рабочий(!) proxy 
+		while n_Poster < len(list_LinksPagesBigPosters):
+			link_PageBigPoster = list_LinksPagesBigPosters[n_Poster]
+			link_PageBigPoster = 'https://www.kinopoisk.ru' + link_PageBigPoster
+			print('       ',link_PageBigPoster)
+
+			# перехожу на страницу с постером большого размера и получаю ссылку для скачивания картинки
+			html_BigPoster = FPK.requestsURLThroughProxy(link_PageBigPoster,proxyIP,_timeout=5)
+			
+			if html_BigPoster == False:	# на пока считаю что если запрос к картинке успешен то каптчи быть не может, но это необходимо проверять!!
+				flagCaptcha_DownloadPostersPoster = 1
+				print('          -= captcha Page Big postrer =-')
+				break   # перейти к новому proxy не теряя текущего состояния !!! т.е. сохранить  n_Poster
+
+			link_DownloadBigPoster = FPK.pars_LinkBigPoster(html_BigPoster)
+
 			# формирую путь для сохранения файла постера
 			path_DownloadPostersPoster = dir_DownloadPosters + '/' + dict_DateAllFilm['Id_kinopisk'] + '_' + str(n_Poster) + '.jpeg'		
 			# URL для скачивания постера == link_Poster
-			print('       ',link_Poster)
-			respons_Poster = FPK.requestsURLThroughProxy(link_Poster,proxyIP,_timeout=5,mod=1)	
+			print('       ',link_DownloadBigPoster)
+			respons_Poster = FPK.requestsURLThroughProxy(link_DownloadBigPoster,proxyIP,_timeout=5,mod=1)	
 
 			# if respons_Poster == False or FPK.pageCapcha(respons_Poster.content):
 			if respons_Poster == False: 	# на пока считаю что если запрос к картинке успешен то каптчи быть не может, но это необходимо проверять!!
 				flagCaptcha_DownloadPostersPoster = 1
-				print('          -= captcha downloader postrer =-')
+				print('          -= captcha download postrer =-')
 				break   # перейти к новому proxy не теряя текущего состояния !!! т.е. сохранить  n_Poster
 			else:
 				with open(path_DownloadPostersPoster, "wb") as code_Poster:
@@ -107,7 +120,7 @@ for dict_DateAllFilm in list_DateAllFilms:
 		else:
 			n_Poster = 0
 			n_space = 4
-			print('          -= all posters are downloadered =-')
+			print('          -= all posters were downloadered =-')
 			break	# выхожу из перебора списка прокси т.к. список ссылок на постера закончен 
 					# необходимо перейти на следующую итерацию цыкла перебора ссылок на страницы постеров
 	else:

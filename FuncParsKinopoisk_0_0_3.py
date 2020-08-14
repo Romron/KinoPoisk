@@ -8,38 +8,42 @@ import os.path
 import json
 
 
-def pars_LinksPosters(html):
+def pars_LinkBigPoster(html_BigPoster):
+
+	# <img 
+	# 	id="image" 
+		# style="cursor: pointer; 
+		# position: relative; margin-left: 0px;" 
+		# src="https://st.kp.yandex.net/im/kadr/3/4/9/kinopoisk.ru-Hogar-3490672.jpg" 
+		# width="830" height="343">
+	
+	soup = BeautifulSoup(html_BigPoster, 'lxml')
+	try:
+		link_DownloadBigPoster = soup.find('img', id='image').get('src')
+		return link_DownloadBigPoster
+	except Exception as err:
+		# print(err)
+		return False
+	# print(list_img)
+
+
+
+
+
+def pars_LinksPagesBigPosters(html):
 	
 	list_LinksPosters = []
 	soup = BeautifulSoup(html, 'lxml')
-
 	try:
-		# <a href="/picture/3474204/"><img src="https://st.kp.yandex.net/images/kadr/sm_3474204.jpg" alt="Просмотр фото" title="Просмотр фото" width="170" height="113"></a>
-		
-		# <a href="/picture/3375438/"><img "Просмотр фото" height="227" src="https://st.kp.yandex.net/images/poster/sm_3375438.jpg" title="Просмотр постера" width="170"/></a>, 
-		# <a href="/picture/3375438/" target="_blank" title="Открыть в новом окне"></a>
-		
-		# # рабочий вариант №1
-		# list_LinksPosters = soup.findAll('a',href=re.compile(r'picture'))
-		# for links in list_LinksPosters:
-		# 	q = link.find('img')
-		# 	if q:
-		# 		href_ = link.get('href')
-		# 		print(href_)
-
 		list_img = soup.findAll('img', title=re.compile(r'Просмотр [(?:постера)(?:фото)]'))
 		for teg_img in list_img:
-			link = teg_img.get('src')
+			link = teg_img.parent.get('href')
 			list_LinksPosters.append(link)
-
 	except Exception as err:
 		print(err)
-
 	if list_LinksPosters: 
 		return list_LinksPosters
 	return False
-
-
 
 def save_Result(dict_,path,count_LinksToFilm):
 

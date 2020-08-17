@@ -9,13 +9,6 @@ import json
 
 
 def pars_LinkBigPoster(html_BigPoster):
-
-	# <img 
-	# 	id="image" 
-		# style="cursor: pointer; 
-		# position: relative; margin-left: 0px;" 
-		# src="https://st.kp.yandex.net/im/kadr/3/4/9/kinopoisk.ru-Hogar-3490672.jpg" 
-		# width="830" height="343">
 	
 	soup = BeautifulSoup(html_BigPoster, 'lxml')
 	try:
@@ -24,11 +17,6 @@ def pars_LinkBigPoster(html_BigPoster):
 	except Exception as err:
 		# print(err)
 		return False
-	# print(list_img)
-
-
-
-
 
 def pars_LinksPagesBigPosters(html):
 	

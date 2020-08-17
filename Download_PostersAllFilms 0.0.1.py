@@ -82,7 +82,7 @@ for dict_DateAllFilm in list_DateAllFilms:
 		while n_Poster < len(list_LinksPagesBigPosters):
 			link_PageBigPoster = list_LinksPagesBigPosters[n_Poster]
 			link_PageBigPoster = 'https://www.kinopoisk.ru' + link_PageBigPoster
-			print('       ',link_PageBigPoster)
+			# print('       ',link_PageBigPoster)
 
 			# перехожу на страницу с постером большого размера и получаю ссылку для скачивания картинки
 			html_BigPoster = FPK.requestsURLThroughProxy(link_PageBigPoster,proxyIP,_timeout=5)

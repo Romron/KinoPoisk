@@ -26,10 +26,6 @@ def pars_LinkBigPoster(html_BigPoster):
 		return False
 	# print(list_img)
 
-
-
-
-
 def pars_LinksPagesBigPosters(html):
 	
 	list_LinksPosters = []
@@ -40,7 +36,7 @@ def pars_LinksPagesBigPosters(html):
 			link = teg_img.parent.get('href')
 			list_LinksPosters.append(link)
 	except Exception as err:
-		print(err)
+		# print(err)
 	if list_LinksPosters: 
 		return list_LinksPosters
 	return False
@@ -65,13 +61,13 @@ def save_Result(dict_,path,count_LinksToFilm):
 			with open(path_ToFile, 'r+', encoding = 'utf-8') as file_handle:
 				
 				# для продолжаения работы программы с места остановки
-				str_ = '{ "count_LinksToFilm" : "' + str(count_LinksToFilm) +'"},'
+				str_ = '{ "count_LinksToFilm" : "' + str(count_LinksToFilm) +'" ,'
 				if len(str_) < 50:
-					n = 50 - len(str_)
+					n = 51 - len(str_)
 				else:
 					print('count_LinksToFilm слишком большой')
 					return False
-				str_ = '{ "count_LinksToFilm" : "' + str(count_LinksToFilm) +'"' + ' '*n + ' },'
+				str_ = '{ "count_LinksToFilm" : "' + str(count_LinksToFilm) +'"' + ' '*n + ','
 
 				# для продолжаения работы программы с места остановки
 				file_handle.seek(2,0) 
@@ -85,13 +81,13 @@ def save_Result(dict_,path,count_LinksToFilm):
 	# ===================  запись в новый или пустой файл  ========================
 
 	# для продолжаения работы программы с места остановки
-	str_ = '{ "count_LinksToFilm" : "' + str(count_LinksToFilm) +'"},'
+	str_ = '{ "count_LinksToFilm" : "' + str(count_LinksToFilm) +'" ,'
 	if len(str_) < 50:
 		n = 50 - len(str_)
 	else:
 		print('count_LinksToFilm слишком большой')
 		return False
-	str_ = '{ "count_LinksToFilm" : "' + str(count_LinksToFilm) +'"' + ' '*n + '},\n'
+	str_ = '{ "count_LinksToFilm" : "' + str(count_LinksToFilm) +'"' + ' '*n + ',\n'
 
 
 	with open(path_ToFile, 'w', encoding = 'utf-8') as file_handle:

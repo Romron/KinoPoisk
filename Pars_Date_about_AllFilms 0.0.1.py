@@ -12,6 +12,7 @@ timeStart = time.strftime("%d-%m-%Y %H.%M.%S", time.localtime())
 print('Start at  ' + timeStart)
 
 path_FileSaveResult = 'json/result_DateAboutAllFilms .json'
+# path_FileSaveResult = 'json/result_DateAboutAllFilms  TEST .json'
 
 count_LinksToFilm = 1
 count_proxyIP = 0
@@ -27,7 +28,7 @@ with open('json/arrLinksAllFilms 22-06-2020 09.11.09 .json') as file_handle:	# �
     list_LinksToFilm = json.load(file_handle)
 
 # with open('Proxylist/proxylist 05-08-2020 20.00.19 .json') as file_handle:	# получаю прокси из файла в список
-with open('Proxylist/proxylist 07-08-2020 09.37.27 .json') as file_handle:	# получаю прокси из файла в список
+with open('Proxy/Proxylist/proxylist 17-08-2020 10.10.53 .json') as file_handle:	# получаю прокси из файла в список
     list_Proxy = json.load(file_handle)
 
 

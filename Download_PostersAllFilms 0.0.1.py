@@ -79,6 +79,7 @@ while n_Film < len(list_DateAllFilms):
 				list_LinksPagesBigPosters = FPK.pars_LinksPagesBigPosters(html)		# получаю список ссылок на страницы спостерами большого размера
 				if list_LinksPagesBigPosters == False:
 					print(' '*n_space,url_PagePoster,'    постеров нет')
+					n_Film += 1
 					break
 			else:
 				continue	# перехожу на следующий прокси в списке

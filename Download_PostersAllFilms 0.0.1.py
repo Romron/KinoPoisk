@@ -116,6 +116,9 @@ while n_Film < len(list_DateAllFilms):
 				    code_Poster.write(respons_Poster.content)
 				flagCaptcha_DownloadPostersPoster = 0
 				n_Poster += 1
+			# т.к. мне не нужно более 5-6 постеров на каждый фильм, а их может быть более 10! 
+			if n_Poster > 6:
+				break
 
 		if flagCaptcha_DownloadPostersPoster == 1:
 				count_proxyIP += 1
@@ -132,7 +135,7 @@ while n_Film < len(list_DateAllFilms):
 					n = 51 - len(str_)
 				else:
 					print(' '*n_space,'count_FilmDownloadedPosters слишком большой')
-				str_ = '  "count_FilmDownloadedPosters" : "' + str(n_Film) +'"' + ' '*n + '},'
+				str_ = '  "count_FilmDownloadedPosters" : "' + str(n_Film) +'"' + '},'+ ' '*n 
 
 				# для продолжаения работы программы с места остановки
 				file_handle.seek(63,0) 

@@ -36,6 +36,7 @@ def pars_LinksPagesBigPosters(html):
 			link = teg_img.parent.get('href')
 			list_LinksPosters.append(link)
 	except Exception as err:
+		pass
 		# print(err)
 	if list_LinksPosters: 
 		return list_LinksPosters

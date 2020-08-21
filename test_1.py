@@ -110,7 +110,7 @@ def fill_in(io, edge_mask, outer_mask):
     return hsv_to_rgb(io_hsv)
 
 def rgb_to_hsv(im):
-    return cv2.cvtColor(im, cv2.COLOR_BGR2HSV)
+    return cv2.cvtColor(im, cv2.COLOR_BGR2HSV)	#  для преобразования изображения из цветового RGB в HSV
 
 def hsv_to_rgb(im):
     return cv2.cvtColor(im, cv2.COLOR_HSV2BGR)
@@ -121,7 +121,7 @@ def rgb_to_intensity(im):
 
 def make_random_colour_map_with_stats(stats, pop_thresh = 0):
     n = len(stats)
-    colour_map = np.zeros( [n, 3], dtype=np.uint8)
+    colour_map = np.zeros( [n, 3], dtype=np.uint8)	# Возвращает новый массив заданной формы и типа, заполненный нулями
     for i in range(n):
         if ( (pop_thresh != 0) and (stats[i][4] < pop_thresh) ) or  (i == 0):
              colour_map[i] = [0,0,0]                            # make small regions and region 0 (background) black
@@ -137,10 +137,10 @@ Image comes from here
 https://www.architecture.com/image-library/RIBApix/licensed-image/poster/balintore-castle-angus-the-entrance-front/posterid/RIBA65186.html
 """
 
-def display_and_output_image(name, im):
-    cv2.imshow(name,im)
+def display_and_output_image(name, structure_ArrImg):
+    cv2.imshow(name,structure_ArrImg)		# отображаю изображения в окне. name - имя окна, structure_ArrImg - растркартинки. Окно автоматически подгоняется под размер изображения
     file_name = os.path.join( "C:\\Users\\david\\Desktop\\", name + ".jpg")
-    cv2.imwrite(file_name,im)
+    cv2.imwrite(file_name,structure_ArrImg)	# сохранения изображения на любом устройстве хранения. Сохранит изображение в соответствии с указанным форматом в текущем рабочем каталоге.
 
 
 def create_letter_mask(image_saturation):
@@ -149,15 +149,20 @@ def create_letter_mask(image_saturation):
 
     threshold saturation to detect letters (low saturation)
     find big connected components (small connected components are noise)
+
+	пороговая насыщенность для обнаружения букв (низкая насыщенность)
+    найти большие связанные компоненты (маленькие связанные компоненты - это шум)
+
     """
-    connectivity = 4
-    ret, thresh_s = cv2.threshold(image_saturation, 42, 255, cv2.THRESH_BINARY_INV)  # 50 too high, 25 too low
-    output = cv2.connectedComponentsWithStats(thresh_s, connectivity, cv2.CV_32S)
-    blob_image = output[1]
-    stats = output[2]
+    connectivity = 4		# связь(?)
+    ret, thresh_s = cv2.threshold(image_saturation, 42, 255, cv2.THRESH_BINARY_INV)  # 50 too high, 25 too low	пороговая сигментация изображения т.е. в результате получаю белые буквы на чёрном фоне
+    output = cv2.connectedComponentsWithStats(thresh_s, connectivity, cv2.CV_32S)	# поиска связанных компонентов возвращает кортеж номеров компонентов и изображение с метками для компонентов статистику о каждом компоненте и их центроидах.
+    																				# т.е. вычисление всех компонентов, соединенных черным, и удаление тех, которые меньше нескольких пикселей
+    blob_image = output[1]	# здесь находиться изображение с метками для компонентов (??)
+    stats = output[2]	# здесь находиться статистика о каждом компоненте и их центроидах (??)
     pop_thresh = 170
-    big_blob_colour_map = make_random_colour_map_with_stats(stats, pop_thresh)
-    all_blob_colour_map = make_random_colour_map_with_stats(stats)
+    big_blob_colour_map = make_random_colour_map_with_stats(stats, pop_thresh)	# возвращает маску случайного цвета используя статистику для большого региона(??)
+    all_blob_colour_map = make_random_colour_map_with_stats(stats)	# возвращает маску случайного цвета используя статистику для всех регионов(?????)
     big_blob_coloured_image = big_blob_colour_map[blob_image]                       # output
     all_blob_coloured_image = all_blob_colour_map[blob_image]                       # output
     display_and_output_image("big_blob_coloured_image", big_blob_coloured_image)
@@ -171,12 +176,12 @@ def main():
 
     https://www.architecture.com/image-library/RIBApix/licensed-image/poster/balintore-castle-angus-the-entrance-front/posterid/RIBA65186.html
     """
-    im = cv2.imread(r"C:\Users\david\Desktop\riba_pix_cropped.jpg")		# считывает изображение из файла
-    print (im.shape)
-    display_and_output_image("image",im)		# отображать и выводить изображение
-    hsv = rgb_to_hsv(im)
-    image_saturation = hsv[:,:,1]                                                           # output
-    display_and_output_image("image_saturation",image_saturation)
+    structure_ArrImg = cv2.imread(r"C:\Users\david\Desktop\riba_pix_cropped.jpg")		# считывает бит мап изображения из файла в переменную в виде массива(!!) 
+    print (structure_ArrImg.shape)	# возвращает структуру, форму (т.е. кол-во столбцов, строк и каналов), массива
+    display_and_output_image("image",structure_ArrImg)		# отображаю изображения в окне. name - имя окна, structure_ArrImg - растркартинки.
+    hsv = rgb_to_hsv(structure_ArrImg)	# для преобразования изображения из цветового RGB в HSV
+    image_saturation = hsv[:,:,1]  # устанавливаю яркость всей картинки в 1  # output
+    display_and_output_image("image_saturation",image_saturation)	# отображаю изображения в окне. name - имя окна, structure_ArrImg - растркартинки.
 
     letter_mask = create_letter_mask(image_saturation)
 

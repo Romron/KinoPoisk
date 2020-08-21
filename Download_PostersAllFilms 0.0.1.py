@@ -44,7 +44,7 @@ if not os.path.exists(dir_DownloadPosters) :
 	os.mkdir(dir_DownloadPosters)
 
 # получаю прокси из файла в список
-with open('Proxy/Proxylist/proxylist 17-08-2020 10.10.53 .json') as file_handle:	
+with open('Proxy/Proxylist/proxylist 21-08-2020 09.01.47 .json') as file_handle:	
     list_Proxy = json.load(file_handle)
 # получаю ссылку на страницу постперов фильма
 with open(path_FileDateAllFilms, "r", encoding='utf-8') as file_handle:
@@ -80,7 +80,7 @@ while n_Film < len(list_DateAllFilms):
 				if list_LinksPagesBigPosters == False:
 					print(' '*n_space,url_PagePoster,'    постеров нет')
 					n_Film += 1
-					break
+					break			# добавить запись в файл result_DateAboutAllFilms .json новое значение count_FilmDownloadedPosters
 			else:
 				continue	# перехожу на следующий прокси в списке
 		

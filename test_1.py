@@ -172,8 +172,8 @@ def create_letter_mask(image_saturation):
     all_blob_colour_map = make_random_colour_map_with_stats(stats)	# возвращает маску случайного цвета используя статистику для всех регионов(?????)
     big_blob_coloured_image = big_blob_colour_map[blob_image]                       # output
     all_blob_coloured_image = all_blob_colour_map[blob_image]                       # output
-    # display_and_output_image("big_blob_coloured_image", big_blob_coloured_image)
-    # display_and_output_image("all_blob_coloured_image", all_blob_coloured_image)
+    display_and_output_image("big_blob_coloured_image", big_blob_coloured_image)
+    display_and_output_image("all_blob_coloured_image", all_blob_coloured_image)
     letter_mask = coloured_image_to_edge_mark(big_blob_coloured_image)
     return letter_mask
 
@@ -199,12 +199,12 @@ def main():
     edge_mask = np.logical_and( np.logical_not(inner_mask), outer_mask)
     edge_mask = np.where(edge_mask,255,0).astype(np.uint8)
     
-    display_and_output_image("edge_mask",edge_mask)
+    # display_and_output_image("edge_mask",edge_mask)
     inner_image = np.where( triple_mask(inner_mask), structure_ArrImg, 0)
     outer_image = np.where( triple_mask(outer_mask),0 ,structure_ArrImg)
    
-    display_and_output_image("inner_image",inner_image)
-    display_and_output_image("outer_image",outer_image)
+    # display_and_output_image("inner_image",inner_image)
+    # display_and_output_image("outer_image",outer_image)
 
     balanced_inner_image = balance_histograms_using_v(inner_image,outer_image)
     # display_and_output_image("balanced_inner_image",balanced_inner_image)
@@ -216,7 +216,7 @@ def main():
     # display_and_output_image("after_filling_in",after_filling_in)
 
     cv2.waitKey(0)
-    cv2.destroyAllWindows()
+    # cv2.destroyAllWindows()
 
 
 

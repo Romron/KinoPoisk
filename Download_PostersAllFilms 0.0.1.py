@@ -44,7 +44,7 @@ if not os.path.exists(dir_DownloadPosters) :
 	os.mkdir(dir_DownloadPosters)
 
 # получаю прокси из файла в список
-with open('Proxy/Proxylist/proxylist 04-09-2020 09.41.37 .json') as file_handle:	
+with open('Proxy/Proxylist/proxylist 08-09-2020 11.45.44 .json') as file_handle:	
     list_Proxy = json.load(file_handle)
 # получаю ссылку на страницу постперов фильма
 with open(path_FileDateAllFilms, "r", encoding='utf-8') as file_handle:

@@ -31,19 +31,28 @@ while True:
     s2 = cv2.getTrackbarPos('s2', 'settings')
     v2 = cv2.getTrackbarPos('v2', 'settings')
 
-    # формируем начальный и конечный цвет фильтра
-    h_min = np.array((h1, s1, v1), np.uint8)
-    h_max = np.array((h2, s2, v2), np.uint8)
+    # # формируем начальный и конечный цвет фильтра
+    # h_min = np.array((h1, s1, v1), np.uint8)
+    # h_max = np.array((h2, s2, v2), np.uint8)
 
-    # накладываем фильтр на кадр в модели HSV
-    thresh_1 = cv2.inRange(hsv, h_min, h_max)
+    # # накладываем фильтр на кадр в модели HSV
+    # thresh_1 = cv2.inRange(hsv, h_min, h_max)
 
-    hsv_img_saturation = hsv[:,:,1] 
-    connectivity = s1    
-    ret, thresh_2 = cv2.threshold(hsv_img_saturation, h1, h2, cv2.THRESH_BINARY_INV)
+    # hsv_img_saturation = hsv[:,:,1] 
+    # connectivity = s1    
+    # ret, thresh_2 = cv2.threshold(hsv_img_saturation, h1, h2, cv2.THRESH_BINARY_INV)
 
-    cv2.imshow('result_1', thresh_1) 
-    cv2.imshow('result_2', thresh_2) 
+    # cv2.imshow('result_1', thresh_1) 
+    # cv2.imshow('result_2', thresh_2) 
+
+
+    gray_img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    ret, thresh_gray = cv2.threshold(gray_img, h1, h2, cv2.THRESH_BINARY_INV)
+
+
+    cv2.imshow('gray_img',gray_img)
+    cv2.imshow('thresh_gray',thresh_gray)
+
 
 
     ch = cv2.waitKey(5)

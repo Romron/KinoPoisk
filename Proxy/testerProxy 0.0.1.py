@@ -11,7 +11,6 @@ import json
 # from proxylist import *		# для тестов
 
 
-print("test 3.py     Чекер proxy с помощью библиотеки Requests \n")
 
 countProxy = 0
 countAnonymousProxy = 0
@@ -20,8 +19,8 @@ countTransparentProxy = 0
 # url = "https://httpbin.org"
 
 # url = "https://www.kinopoisk.ru/"
-# url = "http://yandex.ru/"
-url = "https://2ip.ua/ru"
+url = "http://yandex.ru/"
+# url = "https://2ip.ua/ru"
 
 listHeaders = [
 	# {'User-Agent' : 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/46.0.2486.0 Safari/537.36 Edge/13.10586'},	# Microsoft Edge (Win 10 x64):
@@ -36,10 +35,15 @@ listHeaders = [
 	{'User-Agent' : 'Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:47.0) Gecko/20100101 Firefox/47.0'}
 ]
 
-# Список прокси из файла:
-with open('Proxylist/proxylist 29-07-2020 08.54.06 .json') as file_handle:
-    proxyList_from_file = json.load(file_handle)
+print("test 3.py     Чекер proxy с помощью библиотеки Requests")
+print('Тестовый URL: ',url,'\n')
 
+
+
+# Список прокси из файла:
+# with open('Proxylist/SOCS_proxylist 08-09-2020 10.54.18 .json') as file_handle:
+with open('Proxylist/proxylist 04-09-2020 09.41.37 .json') as file_handle:
+    proxyList_from_file = json.load(file_handle)
 
 
 
@@ -55,40 +59,23 @@ for PROXY in proxyList_from_file:
 	proxyIP = PROXY
 	http_proxy = "http://" + proxyIP
 	https_proxy = "https://" + proxyIP 
+	# http_socks5_proxy = "socks5://" + proxyIP 
+	# https_socks5_proxy = "socks5://" + proxyIP 
+	# http_socks4_proxy = "socks4://" + proxyIP 
+	# https_socks4_proxy = "socks4://" + proxyIP 
 
 	try:
 		# proxies = {"http": proxyIP}
 		proxies = {"http": http_proxy,
-				   "https":https_proxy}
+				   "https":https_proxy,
+				   # "http": http_socks5_proxy,
+				   # "https":https_socks5_proxy,
+				   # "http": http_socks4_proxy,
+				   # "https":https_socks4_proxy,				   
+				   }
 		# response = requests.get(url,headers=headers,proxies=proxies,verify=False)
-		response = requests.get(url,headers=headers,proxies=proxies)
+		response = requests.get(url,headers=headers,proxies=proxies,timeout=3)
 		response.encoding = 'utf-8'
-
-	# Парсим полученную страницу:
-		soup = BeautifulSoup(response.text, 'lxml')
-		div_ip = soup.find('div', class_='ip' )
-		realIP = div_ip.text.rstrip().lstrip()		# Удаление пробелов в начале и конце строки
-		div_User_Agent = soup.find('div', text='Браузер:')
-		div_Location = soup.find('div', text='Местоположение:')
-
-	# Вывод результата:
-
-		print(str(countProxy) + ". " + str(response))
-		print('      proxyIP:  ' + proxyIP)		
-		print('      realIP:   ' + realIP)		
-		print('      Браузер: ' + div_User_Agent.nextSibling.text)		
-		print('      Местоположение: ' + div_Location.nextSibling.nextSibling.text)
-		
-		# if (realIP == PROXY):
-		# 	print(str(countProxy) + ". " + str(response) + '    proxy is anonymous')
-		# 	print('      proxyIP:  ' + proxyIP)		
-		# 	print('      realIP:   ' + realIP)		
-		# 	print('      Браузер: ' + div_User_Agent.nextSibling.text)		
-		# 	print('      Местоположение: ' + div_Location.nextSibling.nextSibling.text)
-		# else:
-		# 	print(str(countProxy) + ". " + str(response) + '   код ответа сервера:   ' + response.status_code +  'ProxyIP = ' + PROXY + '     proxy is transparent')
-		# 	countTransparentProxy += 1
-		# 	continue
 
 # Оброботка исключний:
 	except TimeoutError:
@@ -115,6 +102,33 @@ for PROXY in proxyList_from_file:
 	except Exception as err:
 		print(str(countProxy) + ". proxy is dont work" )
 		continue
+
+# Парсим полученную страницу:
+	# soup = BeautifulSoup(response.text, 'lxml')
+	# div_ip = soup.find('div', class_='ip' )
+	# realIP = div_ip.text.rstrip().lstrip()		# Удаление пробелов в начале и конце строки
+	# div_User_Agent = soup.find('div', text='Браузер:')
+	# div_Location = soup.find('div', text='Местоположение:')
+
+# Вывод результата:
+
+	print(str(countProxy) + ". " + str(response))
+	# print('      proxyIP:  ' + proxyIP)		
+	# print('      realIP:   ' + realIP)		
+	# print('      Браузер: ' + div_User_Agent.nextSibling.text)		
+	# print('      Местоположение: ' + div_Location.nextSibling.nextSibling.text)
+	
+	# if (realIP == PROXY):
+	# 	print(str(countProxy) + ". " + str(response) + '    proxy is anonymous')
+	# 	print('      proxyIP:  ' + proxyIP)		
+	# 	print('      realIP:   ' + realIP)		
+	# 	print('      Браузер: ' + div_User_Agent.nextSibling.text)		
+	# 	print('      Местоположение: ' + div_Location.nextSibling.nextSibling.text)
+	# else:
+	# 	print(str(countProxy) + ". " + str(response) + '   код ответа сервера:   ' + response.status_code +  'ProxyIP = ' + PROXY + '     proxy is transparent')
+	# 	countTransparentProxy += 1
+	# 	continue
+
 
 	countAnonymousProxy += 1
 

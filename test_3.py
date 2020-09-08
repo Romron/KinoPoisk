@@ -6,7 +6,6 @@ if __name__ == '__main__':
     def nothing(*arg):
         pass
 
-# cv2.namedWindow( "result" ) # создаем главное окно
 cv2.namedWindow( "settings" ) # создаем окно настроек
 
 # cap = video.create_capture(0)
@@ -44,8 +43,7 @@ while True:
     ret, thresh_2 = cv2.threshold(hsv_img_saturation, h1, h2, cv2.THRESH_BINARY_INV)
 
     cv2.imshow('result_1', thresh_1) 
-    # cv2.imshow('result_2', thresh_2) 
- 
+    cv2.imshow('result_2', thresh_2) 
 
 
     ch = cv2.waitKey(5)

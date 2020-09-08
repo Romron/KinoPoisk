@@ -209,6 +209,20 @@ def requestsURLThroughProxy(url,proxyIP = 0,_timeout=2,mod=0,headers={'User-Agen
 		https_proxy = "https://" + proxyIP 
 		proxies = {"http": http_proxy,
 				   "https":https_proxy}
+		
+		# http_proxy = "http://" + proxyIP
+		# https_proxy = "https://" + proxyIP 
+		# http_socks5_proxy = "socks5://" + proxyIP 
+		# https_socks5_proxy = "socks5://" + proxyIP 
+		# http_socks4_proxy = "socks4://" + proxyIP 
+		# https_socks4_proxy = "socks4://" + proxyIP 
+		# proxies = {"http": http_proxy,
+		# 		   "https":https_proxy,
+		# 		   "http": http_socks5_proxy,
+		# 		   "https":https_socks5_proxy,
+		# 		   "http": http_socks4_proxy,
+		# 		   "https":https_socks4_proxy}
+
 	# Попытка подключения к URLу
 	try:
 		response = requests.get(url,headers=headers,proxies=proxies,timeout=_timeout)

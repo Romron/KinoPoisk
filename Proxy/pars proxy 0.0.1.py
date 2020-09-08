@@ -142,6 +142,7 @@ def Get_HTML(URL,mode=1,IP_proxy='',flag_return_driver=0,driver=False):
 
 		# driver.close()	# закрываю браузер
 		driver.quit()	# закрываю браузер
+		r.destroy()		# закрываю окно - обьект tkinter
 		return html
 
 
@@ -399,6 +400,7 @@ if __name__ == '__main__':
 	if driver:	
 		pass
 		driver.quit()	# закрываю браузер если он всё ещё открыт
+
 
 	print('\n\n')
 	print(result_listProxy)

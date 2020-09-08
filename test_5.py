@@ -1,34 +1,31 @@
+'''
+	открыть картинку
+	создать маску
+		подобрать параметры
+		убрать шум
+	преобразования по маске
+		с помощью cv2.inpaint()
+'''
 import cv2
+import numpy as np
+import random
 
+img = cv2.imread(r"test_img/test_1.jpg")
+template = cv2.imread(r"test_img/templ.jpg")
 
-img = cv2.imread('image.jpg')
-# convert image to grayscale image
 gray_img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+ret, mask = cv2.threshold(gray_img, 88, 255, cv2.THRESH_BINARY_INV)
+mask = ~mask
 
-# convert the grayscale image to binary image
-ret,thresh = cv2.threshold(gray_image,42, 255, cv2.THRESH_BINARY_INV)
+result = cv2.matchTemplate(img, template, cv2.TM_CCOEFF_NORMED)
+min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(result)
+print("max_loc",max_loc)
 
-# cv2.imshow("Image_1", thresh)
+mask[0:max_loc[1],:] = 0
+mask[:,0:max_loc[0]] = 0
 
-# calculate moments of binary image
-M = cv2.moments(thresh)
+dst_TELEA = cv2.inpaint(img,mask,3,cv2.INPAINT_TELEA)
+cv2.imshow('dst_TELEA',dst_TELEA)
 
-print('M   ',M)
-
-for x in M:
-	print(x,':',M.get(x))
-
-# calculate x,y coordinate of center
-cX = int(M["m10"] / M["m00"])
-cY = int(M["m01"] / M["m00"])
-
-print(cX,cY)
-
-# put text and highlight the center
-cv2.circle(thresh, (cX, cY), 5, (50, 255, 250), -1)
-# cv2.putText(img, "centroid", (cX - 25, cY - 25),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 2)
-
-# out_img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-# display the image
-cv2.imshow("Image", thresh)
 cv2.waitKey(0)
+cv2.destroyAllWindows()

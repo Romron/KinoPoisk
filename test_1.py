@@ -70,10 +70,12 @@ def triple_mask(mask):
     return np.stack( [mask]* 3, axis = 2)
 
 def get_inner_and_outer_masks(mask):
-    inner_mask = binary_erosion(binary_erosion(binary_dilation(mask)))
-    inner_pixel_count = np.count_nonzero(inner_mask)
+    inner_mask = binary_erosion(binary_erosion(binary_dilation(mask)))	
+    	# binary_erosion == бинарная эрозия это размытие т.е. изображения становится более тонким
+    	# binary_dilation == бинарное расширение т.е. изображение становятся более жирным
+    inner_pixel_count = np.count_nonzero(inner_mask)	# возвращает количество ненулевых элементов массива вдоль указанной оси
     #inner_mask = mask
-    outer_mask = binary_dilation(binary_dilation(mask)) # no colour abnormaility
+    outer_mask = binary_dilation(binary_dilation(mask)) # no colour abnormaility / нет отклонений в цвете
     outer_pixel_count = np.count_nonzero(outer_mask)
     print("inner_pixel_coint = ",inner_pixel_count)
     print("outer_pixel_count = ",outer_pixel_count)
@@ -99,14 +101,19 @@ def fill_in(io, edge_mask, outer_mask):
     s_before      = io_hsv[:,:,1]
     v_before      = io_hsv[:,:,2]
 
+    display_and_output_image("h_before",h_before)
+    display_and_output_image("s_before",s_before)
+    display_and_output_image("v_before",v_before)
+
     outer_mask_uint    = np.where(outer_mask,255,0).astype(np.uint8)
     s_after   = cv2.inpaint(s_before, outer_mask_uint, 15, fill_in_method)       # use outer mask to fill in saturation
     h_after   = cv2.inpaint(h_before, outer_mask_uint, 15 ,fill_in_method)       # use outer mask to fill in hue
-    v_after   = cv2.inpaint(v_before,       edge_mask,  2, fill_in_method)  # use edge to fill in hue
+    v_after   = cv2.inpaint(v_before,       edge_mask,  2, fill_in_method)       # use edge to fill in hue
 
     io_hsv[:,:,0] = h_after
     io_hsv[:,:,1] = s_after
     io_hsv[:,:,2] = v_after
+
     return hsv_to_rgb(io_hsv)
 
 def rgb_to_hsv(im):
@@ -176,36 +183,40 @@ def main():
 
     https://www.architecture.com/image-library/RIBApix/licensed-image/poster/balintore-castle-angus-the-entrance-front/posterid/RIBA65186.html
     """
-    structure_ArrImg = cv2.imread(r"C:\Users\david\Desktop\riba_pix_cropped.jpg")		# считывает бит мап изображения из файла в переменную в виде массива(!!) 
+    structure_ArrImg = cv2.imread(r"IMG/riba_pix_cropped.jpg")		# считывает бит мап изображения из файла в переменную в виде массива(!!) 
     print (structure_ArrImg.shape)	# возвращает структуру, форму (т.е. кол-во столбцов, строк и каналов), массива
-    display_and_output_image("image",structure_ArrImg)		# отображаю изображения в окне. name - имя окна, structure_ArrImg - растркартинки.
+    # display_and_output_image("image",structure_ArrImg)		# отображаю изображения в окне. name - имя окна, structure_ArrImg - растркартинки.
     hsv = rgb_to_hsv(structure_ArrImg)	# для преобразования изображения из цветового RGB в HSV
-    image_saturation = hsv[:,:,1]  # устанавливаю яркость всей картинки в 1  # output
-    display_and_output_image("image_saturation",image_saturation)	# отображаю изображения в окне. name - имя окна, structure_ArrImg - растркартинки.
+    image_saturation = hsv[:,:,1]  # делаю картинку чёрнобелой К А К !!!!!???????
+    # display_and_output_image("image_saturation",image_saturation)	# отображаю изображения в окне. name - имя окна, structure_ArrImg - растркартинки.
 
     letter_mask = create_letter_mask(image_saturation)
 
-    # outer mask bigger than letter mask
-    # inner mask smaller than letter mask
-    # edge mask is between inner and outer mask and contains black line round letters (i.e. to be removed)
-    inner_mask, outer_mask =  get_inner_and_outer_masks(letter_mask)
+    # outer mask bigger than letter mask 	/	внешняя маска больше, чем символьная маска
+    # inner mask smaller than letter mask   /	внутренняя маска меньше символьной маски
+    # edge mask is between inner and outer mask and contains black line round letters (i.e. to be removed) 	/	крайняя маска находится между внутренней и внешней маской и содержит круглые буквы черного цвета (т.е. удаляется)
+    inner_mask, outer_mask =  get_inner_and_outer_masks(letter_mask)		# получить внутренние и внешние маски
     edge_mask = np.logical_and( np.logical_not(inner_mask), outer_mask)
     edge_mask = np.where(edge_mask,255,0).astype(np.uint8)
-    display_and_output_image("edge_mask",edge_mask)
-
-    inner_image = np.where( triple_mask(inner_mask), im, 0)
-    outer_image = np.where( triple_mask(outer_mask) ,0 ,im)
+    
+    # display_and_output_image("edge_mask",edge_mask)
+    inner_image = np.where( triple_mask(inner_mask), structure_ArrImg, 0)
+    outer_image = np.where( triple_mask(outer_mask),0 ,structure_ArrImg)
+   
+    # display_and_output_image("inner_image",inner_image)
+    # display_and_output_image("outer_image",outer_image)
 
     balanced_inner_image = balance_histograms_using_v(inner_image,outer_image)
+    # display_and_output_image("balanced_inner_image",balanced_inner_image)
 
     before_filling_in = balanced_inner_image + outer_image                                   # output
-    display_and_output_image("before_filling_in",before_filling_in)
+    # display_and_output_image("before_filling_in",before_filling_in)
 
     after_filling_in = fill_in(before_filling_in, edge_mask, outer_mask)                     # output
-    display_and_output_image("after_filling_in",after_filling_in)
+    # display_and_output_image("after_filling_in",after_filling_in)
 
     cv2.waitKey(0)
-    cv2.destroyAllWindows()
+    # cv2.destroyAllWindows()
 
 
 

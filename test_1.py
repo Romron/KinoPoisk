@@ -37,17 +37,32 @@ def rm_watermark(path_to_poster,path_to_template):
 
     return poster_without_watermark
 
-
-
-
-
 def main():
     list_Posters = os.listdir(path="IMG/posters")
     path_to_template = 'IMG/templ.jpg'
     dir_wiht_poster = 'IMG/posters/'
+    n_Poster = 0
 
-    for name_to_poster in list_Posters:
-        
+    # продолжение с места остановки:
+        #   получить список уже изменённых файлов из папки назначения
+        #   получить последний элемент этого списка
+        #   получить номер этого єлемента в списке неизменённых файлов
+        #   установить счётчик итераций цыкла перебора списка неизменённых файлов равным полученному номеру
+    try: 
+        list_PostersWithoutWoterMark = os.listdir(path="IMG/posters_without_wotermark")
+        if list_PostersWithoutWoterMark:
+            name_LastPosterWithoutWoterMark = list_PostersWithoutWoterMark[-1]
+            namber_LastPosterWithoutWoterMark = list_Posters.index(name_LastPosterWithoutWoterMark)
+            n_Poster = namber_LastPosterWithoutWoterMark
+        else:
+            pass            
+    except:
+            pass
+
+    # for name_to_poster in list_Posters:
+    while n_Poster < len(list_Posters):
+        name_to_poster = list_Posters[n_Poster]
+       
         paht_to_poster = dir_wiht_poster + name_to_poster
         try:
             poster_without_watermark = rm_watermark(paht_to_poster,path_to_template)
@@ -56,9 +71,7 @@ def main():
         except:
             print(name_to_poster,' is failed')
 
-
-
-    
+        n_Poster += 1
 
 
 if __name__ == '__main__':

@@ -5,6 +5,7 @@ import requests
 import json
 import time
 import FuncParsKinopoisk_0_0_3  as FPK
+import cv2
 
 '''
 + получить ссылку на страницу постперов фильма
@@ -34,6 +35,7 @@ count_proxyIP = 1
 n_space = 4		# для более красивой выдачи результатов
 
 path_FileDateAllFilms = 'json/result_DateAboutAllFilms  TEST .json'
+path_to_template = 'IMG/templ.jpg'
 
 dir_forIMG = os.path.dirname(os.path.abspath(__file__)) + '/IMG'		# TODO: создавать вложенные директории за один раз 
 if not os.path.exists(dir_forIMG) :
@@ -119,6 +121,16 @@ while n_Film < len(list_DateAllFilms):
 				flagCaptcha_DownloadPostersPoster = 0
 				n_Poster += 1
 			# т.к. мне не нужно более 5-6 постеров на каждый фильм, а их может быть более 10! 
+			
+			# Удаляю водяной знак:
+			try:
+				poster_without_watermark = FPK.rm_watermark(path_DownloadPoster,path_to_template)
+			# file_Name = 'IMG/posters_without_wotermark/' + name_to_poster
+				cv2.imwrite(path_DownloadPoster, poster_without_watermark)
+			except:
+				print(name_to_poster,' is failed')
+
+
 			if n_Poster > 6:
 				break
 

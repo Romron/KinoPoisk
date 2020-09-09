@@ -1,223 +1,64 @@
-import numpy as np
+
 import os
-import random
 import cv2
-from skimage.morphology import binary_dilation, binary_erosion
-
-def hist_match(source, template, ignore_black = True):
-    """
-    https://stackoverflow.com/questions/32655686/histogram-matching-of-two-images-in-python-2-x
-    Adjust the pixel values of a grayscale image such that its histogram
-    matches that of a target image
-
-    Arguments:
-    -----------
-        source: np.ndarray
-    			Изображение для преобразования; гистограмма вычисляется по уплощенному массиву
-        template: np.ndarray
-				Изображение шаблона; может иметь разные размеры для источника
-    Returns:
-    -----------
-        matched: np.ndarray
-             Преобразованное выходное изображение
-    """
-
-    oldshape = source.shape		# Массивы NumPy имеют атрибут, называемый shape, который возвращает кортеж с каждым индексом, имеющим количество соответствующих элементов.
-    							# т.е. возвращает кортеж, кол-во элементов которого соответствует кол-ву измерений, вложенных массивов, входящего NumPy массива, 
-    							# а значение каждого элемента соответствует кол-ву элементов в каждом измерении 
-    source = source.ravel()		# возращает непрерывный одномерный массив
-    template = template.ravel()
-
-	# получить набор уникальных значений пикселей и их соответствующие индексы и 
-	# отсчетов
-    s_values, bin_idx, s_counts = np.unique(source, return_inverse=True,return_counts=True)	  # находит уникальные элементы массива и возвращает их в отсортированном массиве.
-																							  # В зависимости от установленных параметров, 
-																							  # данная функция может возвращать: 
-																							  	# индексы входного массива, которые соответствуют его уникальным элементам; 
-																							  	# индексы уникального массива, которые позволяют восстановить входной массив; 
-																							  	# количество вхождений каждого уникального элемента во входном массиве.
 
 
+def rm_watermark(path_to_poster,path_to_template):
+    '''
+        открыть картинку
+        создать маску
+            подобрать параметры
+            убрать шум
+        преобразования по маске
+            с помощью cv2.inpaint()
+    '''
 
-    if ignore_black:
-        s_counts[0] = 0
+    # img = cv2.imread(r"test_img/test_1.jpg")
+    img = cv2.imread(path_to_poster)
+    # template = cv2.imread(r"test_img/templ.jpg")
+    template = cv2.imread(path_to_template)
 
-    t_values, t_counts = np.unique(template, return_counts=True)
-    if ignore_black:
-        t_counts[0] = 0
+    gray_img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    ret, mask = cv2.threshold(gray_img, 88, 255, cv2.THRESH_BINARY_INV)
+    mask = ~mask
 
-    # take the cumsum of the counts and normalize by the number of pixels to
-    # get the empirical cumulative distribution functions for the source and
-    # template images (maps pixel value --> quantile)
-    s_quantiles = np.cumsum(s_counts).astype(np.float64)
-    s_quantiles /= s_quantiles[-1]
-    t_quantiles = np.cumsum(t_counts).astype(np.float64)
-    t_quantiles /= t_quantiles[-1]
+    result = cv2.matchTemplate(img, template, cv2.TM_CCOEFF_NORMED)
+    min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(result)
+    # print("max_loc",max_loc)
 
-    # interpolate linearly to find the pixel values in the template image
-    # that correspond most closely to the quantiles in the source image
-    interp_t_values = np.interp(s_quantiles, t_quantiles, t_values)
+    mask[0:max_loc[1],:] = 0
+    mask[:,0:max_loc[0]] = 0
 
-    returned_image = interp_t_values[bin_idx].reshape(oldshape)
-    return returned_image.astype(np.uint8)
-
-def coloured_image_to_edge_mark(coloured_image):
-   image_sum = coloured_image[:,:,0] + coloured_image[:,:,1] + coloured_image[:,:,2]
-   mask = image_sum > 0
-   return mask
-
-def triple_mask(mask):
-    return np.stack( [mask]* 3, axis = 2)
-
-def get_inner_and_outer_masks(mask):
-    inner_mask = binary_erosion(binary_erosion(binary_dilation(mask)))	
-    	# binary_erosion == бинарная эрозия это размытие т.е. изображения становится более тонким
-    	# binary_dilation == бинарное расширение т.е. изображение становятся более жирным
-    inner_pixel_count = np.count_nonzero(inner_mask)	# возвращает количество ненулевых элементов массива вдоль указанной оси
-    #inner_mask = mask
-    outer_mask = binary_dilation(binary_dilation(mask)) # no colour abnormaility / нет отклонений в цвете
-    outer_pixel_count = np.count_nonzero(outer_mask)
-    print("inner_pixel_coint = ",inner_pixel_count)
-    print("outer_pixel_count = ",outer_pixel_count)
-    return inner_mask, outer_mask
-
-def balance_histograms_using_v(inner, outer):
-    """
-    make RGB image inner have the same brightness (i.e. v) histogram as image outer
-    """
-    inner_v_before, inner_hsv = rgb_to_intensity(inner)
-    outer_v,        outer_hsv = rgb_to_intensity(outer)
-    inner_v_after = hist_match(inner_v_before, outer_v)
-    inner_hsv[:,:,2] = inner_v_after                   # edit V channel only
-    return cv2.cvtColor(inner_hsv, cv2.COLOR_HSV2BGR)  # return as BGR
-
-def fill_in(io, edge_mask, outer_mask):
-    """
-    http://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_photo/py_inpainting/py_inpainting.html
-    """
-    fill_in_method = cv2.INPAINT_TELEA # other choice cv2.INPAINT_NS - makes little visible difference
-    io_hsv        = rgb_to_hsv(io)
-    h_before      = io_hsv[:,:,0]
-    s_before      = io_hsv[:,:,1]
-    v_before      = io_hsv[:,:,2]
-
-    display_and_output_image("h_before",h_before)
-    display_and_output_image("s_before",s_before)
-    display_and_output_image("v_before",v_before)
-
-    outer_mask_uint    = np.where(outer_mask,255,0).astype(np.uint8)
-    s_after   = cv2.inpaint(s_before, outer_mask_uint, 15, fill_in_method)       # use outer mask to fill in saturation
-    h_after   = cv2.inpaint(h_before, outer_mask_uint, 15 ,fill_in_method)       # use outer mask to fill in hue
-    v_after   = cv2.inpaint(v_before,       edge_mask,  2, fill_in_method)       # use edge to fill in hue
-
-    io_hsv[:,:,0] = h_after
-    io_hsv[:,:,1] = s_after
-    io_hsv[:,:,2] = v_after
-
-    return hsv_to_rgb(io_hsv)
-
-def rgb_to_hsv(im):
-    return cv2.cvtColor(im, cv2.COLOR_BGR2HSV)	#  для преобразования изображения из цветового RGB в HSV
-
-def hsv_to_rgb(im):
-    return cv2.cvtColor(im, cv2.COLOR_HSV2BGR)
-
-def rgb_to_intensity(im):
-     hsv  = rgb_to_hsv(im)
-     return hsv[:,:,2], hsv
-
-def make_random_colour_map_with_stats(stats, pop_thresh = 0):
-    n = len(stats)
-    colour_map = np.zeros( [n, 3], dtype=np.uint8)	# Возвращает новый массив заданной формы и типа, заполненный нулями
-    for i in range(n):
-        if ( (pop_thresh != 0) and (stats[i][4] < pop_thresh) ) or  (i == 0):
-             colour_map[i] = [0,0,0]                            # make small regions and region 0 (background) black
-        else:
-            for j in range(3):
-                colour_map[i,j] = 1 + random.randint(0,254)     # big regions are a non-zero random colou
-    return colour_map
-
-"""
-
-Image comes from here
-
-https://www.architecture.com/image-library/RIBApix/licensed-image/poster/balintore-castle-angus-the-entrance-front/posterid/RIBA65186.html
-"""
-
-def display_and_output_image(name, structure_ArrImg):
-    cv2.imshow(name,structure_ArrImg)		# отображаю изображения в окне. name - имя окна, structure_ArrImg - растркартинки. Окно автоматически подгоняется под размер изображения
-    file_name = os.path.join( "C:\\Users\\david\\Desktop\\", name + ".jpg")
-    cv2.imwrite(file_name,structure_ArrImg)	# сохранения изображения на любом устройстве хранения. Сохранит изображение в соответствии с указанным форматом в текущем рабочем каталоге.
-
-
-def create_letter_mask(image_saturation):
-    """
-    https://stackoverflow.com/questions/35854197/how-to-use-opencvs-connected-components-with-stats-in-python
-
-    threshold saturation to detect letters (low saturation)
-    find big connected components (small connected components are noise)
-
-	пороговая насыщенность для обнаружения букв (низкая насыщенность)
-    найти большие связанные компоненты (маленькие связанные компоненты - это шум)
-
-    """
-    connectivity = 4		# связь(?)
-    ret, thresh_s = cv2.threshold(image_saturation, 42, 255, cv2.THRESH_BINARY_INV)  # 50 too high, 25 too low	пороговая сигментация изображения т.е. в результате получаю белые буквы на чёрном фоне
-    output = cv2.connectedComponentsWithStats(thresh_s, connectivity, cv2.CV_32S)	# поиска связанных компонентов возвращает кортеж номеров компонентов и изображение с метками для компонентов статистику о каждом компоненте и их центроидах.
-    																				# т.е. вычисление всех компонентов, соединенных черным, и удаление тех, которые меньше нескольких пикселей
-    blob_image = output[1]	# здесь находиться изображение с метками для компонентов (??)
-    stats = output[2]	# здесь находиться статистика о каждом компоненте и их центроидах (??)
-    pop_thresh = 170
-    big_blob_colour_map = make_random_colour_map_with_stats(stats, pop_thresh)	# возвращает маску случайного цвета используя статистику для большого региона(??)
-    all_blob_colour_map = make_random_colour_map_with_stats(stats)	# возвращает маску случайного цвета используя статистику для всех регионов(?????)
-    big_blob_coloured_image = big_blob_colour_map[blob_image]                       # output
-    all_blob_coloured_image = all_blob_colour_map[blob_image]                       # output
-    display_and_output_image("big_blob_coloured_image", big_blob_coloured_image)
-    display_and_output_image("all_blob_coloured_image", all_blob_coloured_image)
-    letter_mask = coloured_image_to_edge_mark(big_blob_coloured_image)
-    return letter_mask
-
-def main():
-    """
-    original image comes from here
-
-    https://www.architecture.com/image-library/RIBApix/licensed-image/poster/balintore-castle-angus-the-entrance-front/posterid/RIBA65186.html
-    """
-    structure_ArrImg = cv2.imread(r"IMG/riba_pix_cropped.jpg")		# считывает бит мап изображения из файла в переменную в виде массива(!!) 
-    print (structure_ArrImg.shape)	# возвращает структуру, форму (т.е. кол-во столбцов, строк и каналов), массива
-    # display_and_output_image("image",structure_ArrImg)		# отображаю изображения в окне. name - имя окна, structure_ArrImg - растркартинки.
-    hsv = rgb_to_hsv(structure_ArrImg)	# для преобразования изображения из цветового RGB в HSV
-    image_saturation = hsv[:,:,1]  # делаю картинку чёрнобелой К А К !!!!!???????
-    # display_and_output_image("image_saturation",image_saturation)	# отображаю изображения в окне. name - имя окна, structure_ArrImg - растркартинки.
-
-    letter_mask = create_letter_mask(image_saturation)
-
-    # outer mask bigger than letter mask 	/	внешняя маска больше, чем символьная маска
-    # inner mask smaller than letter mask   /	внутренняя маска меньше символьной маски
-    # edge mask is between inner and outer mask and contains black line round letters (i.e. to be removed) 	/	крайняя маска находится между внутренней и внешней маской и содержит круглые буквы черного цвета (т.е. удаляется)
-    inner_mask, outer_mask =  get_inner_and_outer_masks(letter_mask)		# получить внутренние и внешние маски
-    edge_mask = np.logical_and( np.logical_not(inner_mask), outer_mask)
-    edge_mask = np.where(edge_mask,255,0).astype(np.uint8)
+    poster_without_watermark = cv2.inpaint(img,mask,3,cv2.INPAINT_TELEA)
     
-    # display_and_output_image("edge_mask",edge_mask)
-    inner_image = np.where( triple_mask(inner_mask), structure_ArrImg, 0)
-    outer_image = np.where( triple_mask(outer_mask),0 ,structure_ArrImg)
-   
-    # display_and_output_image("inner_image",inner_image)
-    # display_and_output_image("outer_image",outer_image)
-
-    balanced_inner_image = balance_histograms_using_v(inner_image,outer_image)
-    # display_and_output_image("balanced_inner_image",balanced_inner_image)
-
-    before_filling_in = balanced_inner_image + outer_image                                   # output
-    # display_and_output_image("before_filling_in",before_filling_in)
-
-    after_filling_in = fill_in(before_filling_in, edge_mask, outer_mask)                     # output
-    # display_and_output_image("after_filling_in",after_filling_in)
-
-    cv2.waitKey(0)
+    # cv2.imshow('dst_TELEA',poster_without_watermark)
+    # cv2.waitKey(0)
     # cv2.destroyAllWindows()
 
+    return poster_without_watermark
+
+
+
+
+
+def main():
+    list_Posters = os.listdir(path="IMG/posters")
+    path_to_template = 'IMG/templ.jpg'
+    dir_wiht_poster = 'IMG/posters/'
+
+    for name_to_poster in list_Posters:
+        
+        paht_to_poster = dir_wiht_poster + name_to_poster
+        try:
+            poster_without_watermark = rm_watermark(paht_to_poster,path_to_template)
+            file_Name = 'IMG/posters_without_wotermark/' + name_to_poster
+            cv2.imwrite(file_Name, poster_without_watermark)
+        except:
+            print(name_to_poster,' is failed')
+
+
+
+    
 
 
 if __name__ == '__main__':

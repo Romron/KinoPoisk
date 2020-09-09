@@ -44,7 +44,7 @@ if not os.path.exists(dir_DownloadPosters) :
 	os.mkdir(dir_DownloadPosters)
 
 # получаю прокси из файла в список
-with open('Proxy/Proxylist/proxylist 08-09-2020 11.45.44 .json') as file_handle:	
+with open('Proxy/Proxylist/proxylist 09-09-2020 09.24.48 .json') as file_handle:	
     list_Proxy = json.load(file_handle)
 # получаю ссылку на страницу постперов фильма
 with open(path_FileDateAllFilms, "r", encoding='utf-8') as file_handle:
@@ -115,7 +115,7 @@ while n_Film < len(list_DateAllFilms):
 			else:
 				# print('path_DownloadPoster:   ', path_DownloadPoster)
 				with open(path_DownloadPoster, "wb") as code_Poster:
-				    code_Poster.write(respons_Poster.content)
+				    code_Poster.write(respons_Poster.content)	# 09.09.2020 здесь была ошибка запустил заново жду повторения установленно что ошибка была связана с переполнением памяти на флешке
 				flagCaptcha_DownloadPostersPoster = 0
 				n_Poster += 1
 			# т.к. мне не нужно более 5-6 постеров на каждый фильм, а их может быть более 10! 

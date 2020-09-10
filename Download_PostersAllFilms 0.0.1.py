@@ -128,8 +128,7 @@ while n_Film < len(list_DateAllFilms):
 			# file_Name = 'IMG/posters_without_wotermark/' + name_to_poster
 				cv2.imwrite(path_DownloadPoster, poster_without_watermark)
 			except:
-				print(name_to_poster,' is failed')
-
+				print(path_DownloadPoster,' is failed')
 
 			if n_Poster > 6:
 				break
